@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { motion } from "framer-motion";
 import { BarChart2, Bot, MessageCircle, User2, Zap } from "lucide-react";
 
 const steps = [
@@ -67,7 +68,27 @@ const HowItWorks = () => (
     className="relative w-full max-w-5xl mx-auto py-24 px-4 sm:px-8 overflow-hidden"
   >
     {/* Animated blurred background blob */}
-    <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[420px] h-[220px] bg-gradient-to-tr from-primary/20 via-indigo-300/10 to-sky-300/20 rounded-full blur-3xl opacity-50 animate-blob z-0" />
+    <motion.div
+      className="absolute -top-24 left-1/2 w-[420px] h-[220px] bg-gradient-to-tr from-primary/20 via-indigo-300/10 to-sky-300/20 rounded-full blur-3xl opacity-50 z-0"
+      initial={{ y: 0, scaleX: 1, scaleY: 1 }}
+      animate={{
+        y: [0, 10, -10, 0],
+        scaleX: [1, 1.05, 0.97, 1],
+        scaleY: [1, 0.97, 1.05, 1],
+      }}
+      transition={{
+        duration: 12,
+        repeat: Infinity,
+        repeatType: "loop",
+        ease: "linear",
+        times: [0, 0.33, 0.66, 1],
+      }}
+      style={{
+        position: "absolute",
+        left: "50%",
+        transform: "translateX(-50%)",
+      }}
+    />
     <h2 className="relative z-10 text-3xl sm:text-5xl font-extrabold text-center mb-14 bg-gradient-to-r from-primary via-indigo-500 to-sky-500 bg-clip-text text-transparent drop-shadow">
       How It Works
     </h2>
@@ -91,24 +112,6 @@ const HowItWorks = () => (
         </Card>
       ))}
     </div>
-    {/* Keyframes for blob animation */}
-    <style jsx>{`
-      @keyframes blob {
-        0%,
-        100% {
-          transform: translate(-50%, 0) scale(1);
-        }
-        33% {
-          transform: translate(-48%, 10px) scale(1.05, 0.97);
-        }
-        66% {
-          transform: translate(-52%, -10px) scale(0.97, 1.05);
-        }
-      }
-      .animate-blob {
-        animation: blob 12s infinite linear;
-      }
-    `}</style>
   </section>
 );
 
