@@ -78,7 +78,7 @@ const Industries = () => (
       {industries.map(({ icon: Icon, title, description }) => (
         <Card
           key={title}
-          className="bg-white/90 rounded-2xl shadow-xl border border-muted transition-transform hover:-translate-y-1 hover:shadow-2xl"
+          className="bg-card/90 rounded-2xl shadow-xl border border-border transition-transform hover:-translate-y-1 hover:shadow-2xl"
         >
           <CardHeader className="flex flex-col items-center text-center gap-2 pb-0">
             <CardContent className="flex flex-col items-center justify-center p-0 mb-2">
@@ -97,7 +97,7 @@ const Industries = () => (
         </Card>
       ))}
       {/* Extensible card */}
-      <Card className="bg-gradient-to-br from-primary/10 to-sky-100/40 rounded-2xl border-2 border-dashed border-primary/40 shadow-xl transition-transform hover:-translate-y-1 hover:shadow-2xl">
+      <Card className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl border-2 border-dashed border-primary/20 shadow-xl transition-transform hover:-translate-y-1 hover:shadow-2xl">
         <CardHeader className="flex flex-col items-center text-center gap-2 pb-0">
           <CardContent className="flex flex-col items-center justify-center p-0 mb-2">
             <PlusCircle

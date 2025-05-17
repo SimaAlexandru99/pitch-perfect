@@ -96,7 +96,7 @@ const HowItWorks = () => (
       {steps.map((step) => (
         <Card
           key={step.title}
-          className="bg-white/90 rounded-2xl shadow-xl border border-muted transition-transform hover:-translate-y-1 hover:shadow-2xl"
+          className="bg-card/90 rounded-2xl shadow-xl border border-border transition-transform hover:-translate-y-1 hover:shadow-2xl"
         >
           <CardHeader className="flex flex-col items-center text-center gap-2 pb-0">
             <CardContent className="flex flex-col items-center justify-center p-0 mb-2">

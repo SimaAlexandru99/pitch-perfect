@@ -2,7 +2,7 @@ import { ModeToggle } from "@/components/ThemeToggle";
 import Link from "next/link";
 
 const Footer = () => (
-  <footer className="w-full border-t border-gray-200 py-4 px-6 text-center text-xs text-gray-500 mt-12 flex flex-col items-center gap-2">
+  <footer className="w-full border-t border-border py-4 px-6 text-center text-xs text-muted-foreground mt-12 flex flex-col items-center gap-2">
     <div className="flex gap-4 mb-1">
       <Link
         href="https://github.com/"

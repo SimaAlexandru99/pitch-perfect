@@ -73,7 +73,7 @@ interface GetFeedbackByJobIdParams {
 
 interface Feedback {
   id: string;
-  interviewId: string;
+  jobId: string;
   totalScore: number;
   categoryScores: Array<{
     name: string;
@@ -97,7 +97,7 @@ interface GetLatestInterviewsParams {
 }
 
 interface CreateSalesFeedbackParams {
-  interviewId: string;
+  jobId: string;
   userId: string;
   transcript: { role: string; content: string }[];
   feedbackId?: string;
@@ -106,10 +106,13 @@ interface CreateSalesFeedbackParams {
 interface AgentProps {
   userName: string;
   userId?: string;
-  interviewId?: string;
+  jobId: string;
   feedbackId?: string;
-  type: "generate" | "interview";
+  type: "generate" | "practice";
   questions?: string[];
+  jobTitle?: string;
+  jobDomain?: string;
+  jobLevel?: string;
 }
 
 interface InterviewCardProps {
@@ -119,4 +122,21 @@ interface InterviewCardProps {
   type: string;
   techstack: string[];
   createdAt?: string;
+}
+
+interface CreateScriptParams {
+  jobId: string;
+  userId: string;
+  introduction: string;
+  productPitch: string;
+  objections: Array<{ objection: string; response: string }>;
+  closingStatement: string;
+  createdAt: string;
+}
+
+interface AIScriptResponse {
+  introduction?: string;
+  productPitch?: string;
+  objections?: Array<{ objection: string; response: string }>;
+  closingStatement?: string;
 }

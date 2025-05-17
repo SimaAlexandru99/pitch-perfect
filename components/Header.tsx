@@ -24,7 +24,7 @@ const Header = async () => {
   const isUserAuthenticated = await isAuthenticated();
 
   return (
-    <header className="w-full sticky top-0 z-50 bg-white/80 backdrop-blur border-b border-gray-200 py-3 px-6 flex items-center justify-between">
+    <header className="w-full sticky top-0 z-50 bg-background/80 backdrop-blur border-b border-border py-3 px-6 flex items-center justify-between">
       <Link
         href="#"
         className="font-bold text-lg tracking-tight hover:opacity-80 transition-opacity"
@@ -50,30 +50,30 @@ const Header = async () => {
             ))}
           </NavigationMenuList>
         </NavigationMenu>
-        {!isUserAuthenticated ? (
-          <div className="ml-4 flex items-center gap-2">
-            <Button asChild variant="outline" size="sm">
-              <Link href="/sign-in">Sign In</Link>
-            </Button>
-            <Button asChild variant="default" size="sm">
-              <Link href="/sign-up">Sign Up</Link>
-            </Button>
-          </div>
-        ) : (
-          <div className="ml-4 flex items-center gap-2">
+        <div className="flex items-center gap-2">
+          {isUserAuthenticated ? (
             <Button asChild size="sm">
               <Link href="/dashboard">Go to Dashboard</Link>
             </Button>
-          </div>
-        )}
-        <ModeToggle />
+          ) : (
+            <>
+              <Button asChild variant="outline" size="sm">
+                <Link href="/sign-in">Sign In</Link>
+              </Button>
+              <Button asChild variant="default" size="sm">
+                <Link href="/sign-up">Sign Up</Link>
+              </Button>
+            </>
+          )}
+          <ModeToggle />
+        </div>
       </nav>
       <div className="md:hidden">
         <Sheet>
           <SheetTrigger asChild>
             <button
               aria-label="Open menu"
-              className="inline-flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="inline-flex items-center justify-center rounded-md p-2 text-foreground hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary"
             >
               <svg
                 width="24"
@@ -110,22 +110,22 @@ const Header = async () => {
                 </Link>
               ))}
             </nav>
-            {!isUserAuthenticated ? (
-              <div className="mt-8 flex flex-row items-center gap-2 px-4">
-                <Button asChild variant="outline" size="lg" className="w-1/2">
-                  <Link href="/sign-in">Sign In</Link>
-                </Button>
-                <Button asChild variant="default" size="lg" className="w-1/2">
-                  <Link href="/sign-up">Sign Up</Link>
-                </Button>
-              </div>
-            ) : (
-              <div className="mt-8 flex flex-row items-center gap-2 px-4">
+            <div className="mt-8 flex flex-row items-center gap-2 px-4">
+              {isUserAuthenticated ? (
                 <Button asChild size="lg" className="w-full">
                   <Link href="/dashboard">Go to Dashboard</Link>
                 </Button>
-              </div>
-            )}
+              ) : (
+                <>
+                  <Button asChild variant="outline" size="lg" className="w-1/2">
+                    <Link href="/sign-in">Sign In</Link>
+                  </Button>
+                  <Button asChild variant="default" size="lg" className="w-1/2">
+                    <Link href="/sign-up">Sign Up</Link>
+                  </Button>
+                </>
+              )}
+            </div>
             <div className="mt-4 flex justify-center">
               <ModeToggle />
             </div>

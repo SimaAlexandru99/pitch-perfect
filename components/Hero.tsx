@@ -6,10 +6,10 @@ import Link from "next/link";
 const Hero = () => (
   <section
     id="hero"
-    className="relative flex flex-col items-center justify-center min-h-[70vh] py-24 text-center overflow-hidden bg-gradient-to-b from-white to-slate-50"
+    className="relative flex flex-col items-center justify-center min-h-[70vh] py-24 text-center overflow-hidden bg-gradient-to-b from-background to-muted/20"
   >
     {/* Animated blurred background blob */}
-    <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[480px] h-[320px] bg-gradient-to-tr from-primary/30 via-indigo-300/20 to-sky-300/30 rounded-full blur-3xl opacity-60 animate-blob z-0" />
+    <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[480px] h-[320px] bg-gradient-to-tr from-primary/20 via-indigo-300/10 to-sky-300/10 rounded-full blur-3xl opacity-40 animate-blob z-0" />
     {/* Tagline */}
     <span className="relative z-10 mb-4 text-base sm:text-lg font-medium text-primary/80 tracking-wide uppercase">
       AI-powered sales call training
