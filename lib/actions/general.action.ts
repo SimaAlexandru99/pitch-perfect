@@ -1,18 +1,70 @@
 "use server";
 
-import { domains, feedbackSchema } from "@/constants"; // Should define sales-focused fields
+import { domains } from "@/constants";
 import { db } from "@/firebase/admin";
 import { google } from "@ai-sdk/google";
 import { generateObject } from "ai";
+import { z } from "zod";
 
-export async function createFeedback(params: CreateSalesFeedbackParams) {
-  const { jobId, userId, transcript, feedbackId } = params;
+// Define the feedback schema using Zod
+const feedbackSchema = z.object({
+  totalScore: z.number().min(0).max(100),
+  categoryScores: z
+    .array(
+      z.object({
+        name: z.string(),
+        score: z.number().min(0).max(100),
+        comment: z.string(),
+        subcategories: z
+          .array(
+            z.object({
+              name: z.string(),
+              score: z.number().min(0).max(100),
+              comment: z.string(),
+            })
+          )
+          .optional(),
+      })
+    )
+    .min(1),
+  strengths: z.array(z.string()).min(1),
+  areasForImprovement: z.array(z.string()).min(1),
+  finalAssessment: z.string().min(10),
+  recommendations: z.object({
+    shortTerm: z.array(z.string()).min(1),
+    longTerm: z.array(z.string()).min(1),
+    resources: z
+      .array(
+        z.object({
+          title: z.string().min(1),
+          url: z.string().url(),
+          description: z.string().min(10),
+        })
+      )
+      .min(1),
+  }),
+});
+
+export async function createFeedback(params: CreateFeedbackParams) {
+  const { jobId, userId, transcript, feedbackId, metrics } = params;
 
   try {
+    // Log transcript details
+    console.log("=== Interview Transcript ===");
+    console.log("Total messages:", transcript.length);
+    console.log("Messages:");
+    transcript.forEach((message, index) => {
+      console.log(
+        `[${index + 1}] ${message.role.toUpperCase()} (${message.timestamp}):`
+      );
+      console.log(`    ${message.content}`);
+    });
+    console.log("========================");
+
     const formattedTranscript = transcript
       .map(
-        (sentence: { role: string; content: string }) =>
-          `- ${sentence.role}: ${sentence.content}\n`
+        (sentence) =>
+          `- ${sentence.role} (${sentence.timestamp}): ${sentence.content}\n`
       )
       .join("");
 
@@ -31,54 +83,218 @@ Description: ${job.description}
       }
     }
 
+    // Calculate speaking time percentages
+    const totalSpeakingTime = metrics
+      ? metrics.userSpeakingTime + metrics.aiSpeakingTime
+      : 0;
+    const userSpeakingPercentage =
+      totalSpeakingTime > 0
+        ? Math.round(
+            ((metrics?.userSpeakingTime || 0) / totalSpeakingTime) * 100
+          )
+        : 0;
+    const aiSpeakingPercentage =
+      totalSpeakingTime > 0
+        ? Math.round(((metrics?.aiSpeakingTime || 0) / totalSpeakingTime) * 100)
+        : 0;
+
+    // Calculate average response time safely
+    const messageCount = transcript.length;
+    const avgResponseTime =
+      messageCount > 0 && metrics?.totalDuration
+        ? Math.round(metrics.totalDuration / (messageCount / 2))
+        : 0;
+
     const { object } = await generateObject({
       model: google("gemini-2.0-flash-001", {
         structuredOutputs: false,
       }),
-      schema: feedbackSchema,
+      output: "no-schema",
       prompt: `
-You are a professional sales coach reviewing a mock sales call between a trainee and a simulated customer. Your task is to give structured, honest feedback based on the conversation. Be constructive but strict — highlight missed opportunities, weak responses, and communication issues.
+You are a professional sales coach reviewing a mock sales call between a trainee and a simulated customer. Your task is to give structured, honest feedback based on the conversation. Be constructive and balanced in your assessment — recognize both strengths and areas for improvement.
+
+IMPORTANT SCORING GUIDELINES:
+- Base scores on effort and attempt, not just perfection
+- Consider this is a practice session, not a real sales call
+- Start from a baseline of 60 points and adjust based on performance
+- Award points for:
+  * Basic attempt (40-50 points)
+  * Good effort (50-65 points)
+  * Strong performance (65-80 points)
+  * Excellent execution (80-90 points)
+  * Outstanding mastery (90-100 points)
+- Never give scores below 40 unless there was no attempt at all
+- Consider the difficulty level of the job (${
+        jobContext.includes("Level:")
+          ? jobContext.split("Level:")[1].split("\n")[0].trim()
+          : "entry"
+      })
+- Give bonus points for:
+  * Checking availability in introduction (+5 points)
+  * Professional greeting (+5 points)
+  * Clear communication (+5 points)
+  * Good objection handling (+5 points)
+  * Proper closing (+5 points)
 
 ${jobContext}
 
 Here is the full transcript:
 ${formattedTranscript}
 
-Please rate the sales agent from 0 to 100 in the following areas (use only these exact categories):
+${
+  metrics
+    ? `
+Call Metrics:
+- Total Duration: ${metrics.totalDuration || 0} seconds
+- User Speaking Time: ${
+        metrics.userSpeakingTime || 0
+      } seconds (${userSpeakingPercentage}%)
+- AI Speaking Time: ${
+        metrics.aiSpeakingTime || 0
+      } seconds (${aiSpeakingPercentage}%)
+- Silence Time: ${metrics.silenceTime || 0} seconds
+- Interruptions: ${metrics.interruptions || 0}
+- Average Response Time: ${avgResponseTime} seconds
+`
+    : ""
+}
 
-- **Pitch Delivery**: Clarity, persuasiveness, and structure of the opening pitch.
-- **Objection Handling**: Ability to handle common pushbacks or client hesitations.
-- **Product Knowledge**: Relevance and accuracy of the offer explanation.
-- **Engagement & Rapport**: Tone, empathy, ability to build connection.
-- **Call Control & Flow**: Smooth transitions, timing, and guiding the conversation.
+Please provide detailed feedback in the following areas:
 
-Then, provide:
-- **Strengths** (bullet list)
-- **Areas for Improvement** (bullet list)
-- **Final Assessment** (a 2–3 sentence summary of how the agent performed and what they should focus on next)
-`,
+1. Category Scores (0-100):
+- Pitch Delivery (with subcategories: Clarity, Structure, Confidence)
+- Objection Handling (with subcategories: Response Quality, Follow-up, Resolution)
+- Product Knowledge (with subcategories: Accuracy, Depth, Relevance)
+- Engagement & Rapport (with subcategories: Active Listening, Empathy, Connection)
+- Call Control & Flow (with subcategories: Pacing, Transitions, Time Management)
+
+2. Strengths (MUST provide at least one strength, even if minor)
+3. Areas for Improvement (MUST provide at least one area)
+4. Final Assessment (2-3 sentences)
+5. Recommendations:
+   - Short-term improvements (list of specific actions)
+   - Long-term development goals (list of strategic goals)
+   - Learning resources (list of {title, url, description} objects)
+
+Consider the following in your analysis:
+- Speaking time distribution (aim for 40-60% user speaking time)
+- Number of interruptions (fewer is better)
+- Response times (should be natural and not rushed)
+- Silence time (should be appropriate for the context)
+- Overall conversation flow and structure
+
+IMPORTANT: You MUST provide at least one strength and one area for improvement, even if the performance was poor or excellent. For strengths, focus on any positive aspects like:
+- Good greeting or introduction
+- Clear voice or pronunciation
+- Basic product knowledge
+- Attempts at objection handling
+- Professional demeanor
+- Any other positive aspects, no matter how minor
+
+Return the response in this exact format:
+{
+  "totalScore": number,
+  "categoryScores": [
+    {
+      "name": string,
+      "score": number,
+      "comment": string,
+      "subcategories": [
+        {
+          "name": string,
+          "score": number,
+          "comment": string
+        }
+      ]
+    }
+  ],
+  "strengths": string[],
+  "areasForImprovement": string[],
+  "finalAssessment": string,
+  "recommendations": {
+    "shortTerm": string[],
+    "longTerm": string[],
+    "resources": [
+      {
+        "title": string,
+        "url": string,
+        "description": string
+      }
+    ]
+  }
+}`,
       system:
-        "You are a sales performance evaluator providing detailed feedback on a mock voice-based sales call.",
+        "You are a sales performance evaluator providing detailed feedback on a mock voice-based sales call. Focus on actionable insights and specific examples from the conversation. Be encouraging and constructive in your feedback. Always start with a higher baseline score and look for positive aspects to reward.",
+    });
+
+    // Parse and validate the AI response
+    let parsedObject;
+    try {
+      parsedObject = typeof object === "string" ? JSON.parse(object) : object;
+    } catch (error) {
+      console.error("Error parsing AI response:", error);
+      throw new Error("Failed to parse AI response");
+    }
+
+    // Validate the parsed object against the schema
+    const validationResult = feedbackSchema.safeParse(parsedObject);
+    if (!validationResult.success) {
+      console.error("Invalid feedback structure:", validationResult.error);
+      throw new Error("Invalid feedback structure");
+    }
+
+    // Ensure all scores are within valid range
+    const validatedObject = validationResult.data;
+    if (validatedObject.totalScore < 0 || validatedObject.totalScore > 100) {
+      throw new Error("Total score must be between 0 and 100");
+    }
+
+    validatedObject.categoryScores.forEach((category) => {
+      if (category.score < 0 || category.score > 100) {
+        throw new Error(
+          `Category score for ${category.name} must be between 0 and 100`
+        );
+      }
+      category.subcategories?.forEach((sub) => {
+        if (sub.score < 0 || sub.score > 100) {
+          throw new Error(
+            `Subcategory score for ${sub.name} must be between 0 and 100`
+          );
+        }
+      });
     });
 
     const feedback = {
       jobId,
       userId,
-      totalScore: object.totalScore,
-      categoryScores: object.categoryScores,
-      strengths: object.strengths,
-      areasForImprovement: object.areasForImprovement,
-      finalAssessment: object.finalAssessment,
+      totalScore: validatedObject.totalScore,
+      categoryScores: validatedObject.categoryScores,
+      strengths: validatedObject.strengths,
+      areasForImprovement: validatedObject.areasForImprovement,
+      finalAssessment: validatedObject.finalAssessment,
+      transcript,
+      metrics,
+      recommendations: validatedObject.recommendations,
       createdAt: new Date().toISOString(),
     };
 
-    const feedbackRef = feedbackId
-      ? db.collection("feedback").doc(feedbackId)
-      : db.collection("feedback").doc();
+    // Check for existing feedback
+    const existingFeedback = await getFeedbackByJobId({ jobId, userId });
 
-    await feedbackRef.set(feedback);
+    // If feedbackId is provided or existing feedback exists, update it
+    if (feedbackId || existingFeedback) {
+      const feedbackRef = feedbackId
+        ? db.collection("feedback").doc(feedbackId)
+        : db.collection("feedback").doc(existingFeedback!.id);
 
-    return { success: true, feedbackId: feedbackRef.id };
+      await feedbackRef.set(feedback);
+      return { success: true, feedbackId: feedbackRef.id };
+    } else {
+      // Create new feedback
+      const feedbackRef = db.collection("feedback").doc();
+      await feedbackRef.set(feedback);
+      return { success: true, feedbackId: feedbackRef.id };
+    }
   } catch (error) {
     console.error("Error saving sales feedback:", error);
     return { success: false };
@@ -87,7 +303,6 @@ Then, provide:
 
 /**
  * Fetches all sales jobs, ordered by creation date (descending).
- * @returns {Promise<Job[] | null>} Array of jobs or null on error.
  */
 export async function getJobs(): Promise<Job[] | null> {
   try {
@@ -104,8 +319,6 @@ export async function getJobs(): Promise<Job[] | null> {
 
 /**
  * Fetches a single sales job by its ID.
- * @param {string} id - The job ID.
- * @returns {Promise<Job | null>} The job or null if not found.
  */
 export async function getJobById(id: string): Promise<Job | null> {
   try {
@@ -120,8 +333,6 @@ export async function getJobById(id: string): Promise<Job | null> {
 
 /**
  * Creates a new sales job in the database.
- * @param {Omit<Job, 'id'>} jobData - The job data (without id).
- * @returns {Promise<{ success: boolean; jobId?: string }>} Result of creation.
  */
 export async function createJob(
   jobData: Omit<Job, "id">
@@ -140,8 +351,6 @@ export async function createJob(
 
 /**
  * Fetches the latest sales jobs, limited by the provided number.
- * @param {number} limit - The maximum number of jobs to fetch.
- * @returns {Promise<Job[] | null>} Array of jobs or null on error.
  */
 export async function getLatestJobs(limit: number = 10): Promise<Job[] | null> {
   try {
@@ -159,8 +368,6 @@ export async function getLatestJobs(limit: number = 10): Promise<Job[] | null> {
 
 /**
  * Fetches all sales jobs created by a specific user, ordered by creation date (descending).
- * @param {string} userId - The user ID.
- * @returns {Promise<Job[] | null>} Array of jobs or null on error.
  */
 export async function getJobsByUserId(userId: string): Promise<Job[] | null> {
   try {
@@ -178,8 +385,6 @@ export async function getJobsByUserId(userId: string): Promise<Job[] | null> {
 
 /**
  * Fetches feedback for a specific job and user.
- * @param {GetFeedbackByJobIdParams} params - The jobId and userId.
- * @returns {Promise<Feedback | null>} The feedback or null if not found.
  */
 export async function getFeedbackByJobId(
   params: GetFeedbackByJobIdParams
@@ -205,14 +410,12 @@ export async function getFeedbackByJobId(
 
 /**
  * Generates a sales script for a specific job and user.
- * @param {Object} params - The jobId, userId, and optional overwrite flag.
- * @returns {Promise<{ success: boolean; scriptId?: string }>} Result of script generation.
  */
 export async function createScript(params: {
   jobId: string;
   userId: string;
   overwrite?: boolean;
-}) {
+}): Promise<CreateScriptResponse> {
   const { jobId, userId, overwrite = false } = params;
 
   try {
@@ -263,10 +466,11 @@ IMPORTANT:
 1. Generate the script in English only. Do not use any other language.
 2. Use the job context provided above to tailor the script.
 3. Ensure all content is relevant to the job title, domain, and level.
+4. The introduction MUST include checking the client's availability before proceeding.
 
 Return the response in this exact format:
 {
-  "introduction": "string (in English)",
+  "introduction": "string (in English, must include checking availability)",
   "productPitch": "string (with HTML formatting, in English)",
   "objections": [
     {
@@ -277,7 +481,7 @@ Return the response in this exact format:
   "closingStatement": "string (in English)"
 }`,
       system:
-        "You are a sales script generator specializing in creating domain-specific sales scripts. Always generate content in English and ensure it's tailored to the specific job context provided.",
+        "You are a sales script generator specializing in creating domain-specific sales scripts. Always generate content in English and ensure it's tailored to the specific job context provided. Always include checking client availability in the introduction.",
     });
 
     // Parse the AI response with better error handling
@@ -298,9 +502,9 @@ Return the response in this exact format:
 
     // Ensure we have valid data with defaults
     const defaultScript = {
-      introduction: `Hello, I'm calling from Vodafone. As a telecom specialist, I wanted to discuss our latest premium mobile plan that could benefit ${
+      introduction: `Hello, I'm calling from Vodafone. I hope I'm not catching you at a bad time? Do you have a few minutes to discuss our latest premium mobile plan that could benefit ${
         job?.level || "your household"
-      }.`,
+      }?`,
       productPitch: `I'd like to tell you about our GOLD <strong>with</strong> HBO Max plan:
 
 <ul>
@@ -380,11 +584,9 @@ Return the response in this exact format:
 
 /**
  * Fetches a script for a specific job and user.
- * @param {GetFeedbackByJobIdParams} params - The jobId and userId.
- * @returns {Promise<(CreateScriptParams & { id: string }) | null>} The script or null if not found.
  */
 export async function getScript(
-  params: GetFeedbackByJobIdParams
+  params: GetScriptParams
 ): Promise<(CreateScriptParams & { id: string }) | null> {
   const { jobId, userId } = params;
   try {

@@ -12,6 +12,7 @@ import {
   FileText,
   GraduationCap,
   HelpCircle,
+  Layers,
   LayoutDashboard,
   Newspaper,
   Plug,
@@ -409,6 +410,11 @@ export const navigationData = {
       title: "Dashboard",
       url: "/dashboard",
       icon: LayoutDashboard,
+    },
+    {
+      title: "Sales Domains",
+      url: "/dashboard/domains",
+      icon: Layers,
     },
     {
       title: "Sales Jobs",

@@ -66,8 +66,6 @@ const PracticeLoading = () => {
           <Card className="bg-gradient-to-b from-background to-muted/50 border-0 shadow-2xl h-full flex-1">
             <div className="relative flex flex-col min-h-[calc(100vh-12rem)] w-full overflow-hidden">
               <div className="flex-1 w-full flex items-center justify-center relative px-3 py-6 sm:p-8">
-                <div className="absolute inset-0 bg-[url('/pattern.png')] bg-center opacity-5" />
-
                 {/* Participants Grid */}
                 <div className="flex flex-col sm:grid sm:grid-cols-2 gap-4 sm:gap-8 w-full max-w-5xl relative z-10">
                   {/* AI Participant Card Skeleton */}

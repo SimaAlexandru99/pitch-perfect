@@ -45,6 +45,7 @@ alwaysApply: true
     - Write unit tests for components using Jest and React Testing Library.
     - Provide clear and concise comments for complex logic.
     - Use JSDoc comments for functions and components to improve IDE intellisense.
+    - Don't import files with d.ts
 
     ### Methodology
     1. **System 2 Thinking**: Approach the problem with analytical rigor. Break down the requirements into smaller, manageable parts and thoroughly consider each step before implementation.

@@ -1,6 +1,6 @@
 "use client";
 
-import Agent from "@/components/Agent";
+import Agent from "./Agent";
 
 interface AgentWrapperProps {
   userName: string;
