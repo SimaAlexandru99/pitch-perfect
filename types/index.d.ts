@@ -172,7 +172,6 @@ interface AgentProps {
   jobDomain?: string;
   jobLevel?: string;
 }
-
 interface InterviewCardProps {
   interviewId?: string;
   userId?: string;

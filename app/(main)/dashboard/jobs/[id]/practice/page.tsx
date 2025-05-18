@@ -50,12 +50,13 @@ const PracticeDetails = async ({ params }: RouteParams) => {
         domain={job.domain}
         jobTitle={job.title}
         level={job.level}
+        
       />
 
       {/* Meeting Space */}
       <div className="flex-1 p-3 sm:p-6">
-        <div className="mx-auto max-w-[1500px] h-full flex gap-6">
-          <Card className="bg-gradient-to-b from-background to-muted/50 border-0 shadow-2xl h-full flex-1">
+        <div className="mx-auto max-w-[1500px] h-full flex flex-col lg:flex-row gap-6">
+          <Card className="bg-gradient-to-b from-background to-muted/50 border-0 shadow-2xl h-full flex-1 mb-4 lg:mb-0">
             <AgentWrapper
               userName={user?.name ?? "Guest"}
               userId={user?.id ?? "Guest"}

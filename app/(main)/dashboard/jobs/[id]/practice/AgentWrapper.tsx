@@ -14,7 +14,11 @@ interface AgentWrapperProps {
 }
 
 const AgentWrapper = (props: AgentWrapperProps) => {
-  return <Agent {...props} />;
+  return (
+    <>
+      <Agent {...props} />
+    </>
+  );
 };
 
 export default AgentWrapper;
