@@ -1,13 +1,27 @@
 "use client";
 
+import { File, FileText, Mic, MicOff } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { interviewer } from "@/constants";
-import { createFeedback } from "@/lib/actions/general.action";
+import {
+  createFeedback,
+  createScript,
+  getScript,
+} from "@/lib/actions/general.action";
 import { cn } from "@/lib/utils";
 import { vapi } from "@/lib/vapi.sdk";
+import { ScriptPanel } from "./ScriptPanel";
+import { ScriptSkeleton } from "./ScriptSkeleton";
 
 enum CallStatus {
   INACTIVE = "INACTIVE",
@@ -19,6 +33,16 @@ enum CallStatus {
 interface SavedMessage {
   role: "user" | "system" | "assistant";
   content: string;
+}
+
+interface Script {
+  introduction: string;
+  productPitch: string;
+  objections: Array<{
+    objection: string;
+    response: string;
+  }>;
+  closingStatement: string;
 }
 
 const Agent = ({
@@ -36,6 +60,12 @@ const Agent = ({
   const [messages, setMessages] = useState<SavedMessage[]>([]);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [lastMessage, setLastMessage] = useState<string>("");
+  const [isMuted, setIsMuted] = useState(false);
+  const [isScriptOpen, setIsScriptOpen] = useState(false);
+  const [isScriptLoading, setIsScriptLoading] = useState(false);
+  const [script, setScript] = useState<Script | null>(null);
+  const [scriptError, setScriptError] = useState<string | null>(null);
+  const [volumeLevel, setVolumeLevel] = useState(0);
 
   // Add metrics tracking
   const [metrics, setMetrics] = useState({
@@ -47,6 +77,53 @@ const Agent = ({
   });
   const [callStartTime, setCallStartTime] = useState<number>(0);
   const [lastSpeakingStart, setLastSpeakingStart] = useState<number>(0);
+
+  const handleMuteToggle = () => {
+    const newMutedState = !isMuted;
+    setIsMuted(newMutedState);
+    vapi.setMuted(newMutedState);
+  };
+
+  const handleScriptToggle = async () => {
+    if (!isScriptOpen) {
+      setIsScriptOpen(true);
+      if (!script) {
+        setIsScriptLoading(true);
+        setScriptError(null);
+        try {
+          const safeJobId = jobId ?? "";
+          const safeUserId = userId ?? "Guest";
+          let fetchedScript = await getScript({
+            jobId: safeJobId,
+            userId: safeUserId,
+          });
+          if (!fetchedScript) {
+            const { success, scriptId } = await createScript({
+              jobId: safeJobId,
+              userId: safeUserId,
+            });
+            if (success && scriptId) {
+              fetchedScript = await getScript({
+                jobId: safeJobId,
+                userId: safeUserId,
+              });
+            }
+          }
+          if (fetchedScript) {
+            setScript(fetchedScript);
+          } else {
+            setScriptError("Failed to load script.");
+          }
+        } catch {
+          setScriptError("Failed to load script.");
+        } finally {
+          setIsScriptLoading(false);
+        }
+      }
+    } else {
+      setIsScriptOpen(false);
+    }
+  };
 
   useEffect(() => {
     const onCallStart = () => {
@@ -98,12 +175,15 @@ const Agent = ({
       setCallStatus(CallStatus.FINISHED);
     };
 
+    const handleVolume = (volume: number) => setVolumeLevel(volume);
+
     vapi.on("call-start", onCallStart);
     vapi.on("call-end", onCallEnd);
     vapi.on("message", onMessage);
     vapi.on("speech-start", onSpeechStart);
     vapi.on("speech-end", onSpeechEnd);
     vapi.on("error", onError);
+    vapi.on("volume-level", handleVolume);
 
     return () => {
       vapi.off("call-start", onCallStart);
@@ -112,6 +192,7 @@ const Agent = ({
       vapi.off("speech-start", onSpeechStart);
       vapi.off("speech-end", onSpeechEnd);
       vapi.off("error", onError);
+      vapi.off("volume-level", handleVolume);
     };
   }, [callStartTime, lastSpeakingStart]);
 
@@ -206,11 +287,11 @@ Level: ${jobLevel}
   };
 
   return (
-    <div className="flex flex-col h-full space-y-6 p-6">
+    <div className="flex flex-col justify-center items-center h-full w-full gap-y-4 relative">
       {/* Profile Cards Container */}
-      <div className="flex flex-col sm:flex-row gap-6 flex-1 min-h-[280px]">
+      <div className="flex flex-col sm:flex-row gap-6 w-full justify-center items-center">
         {/* AI Interviewer Card */}
-        <div className="flex-1 flex flex-col items-center justify-center p-8 bg-gradient-to-b from-[#171532] to-[#08090D] rounded-2xl border-2 border-primary-200/50 shadow-lg transition-all duration-300 hover:border-primary-200/75">
+        <div className="h-[450px] w-full max-w-[700px] mx-auto flex flex-col items-center justify-center p-8 bg-gradient-to-b from-[#171532] to-[#08090D] rounded-xl border-2 border-primary-200/50 shadow-lg transition-all duration-300 hover:border-primary-200/75 focus-within:ring-2 focus-within:ring-primary-300">
           <div className="relative">
             <div className="relative flex items-center justify-center blue-gradient rounded-full size-32 transition-transform duration-300 hover:scale-105">
               <Image
@@ -230,9 +311,8 @@ Level: ${jobLevel}
             AI Interviewer
           </h3>
         </div>
-
         {/* User Profile Card */}
-        <div className="flex-1 flex flex-col items-center justify-center p-8 bg-gradient-to-b from-background to-muted/50 rounded-2xl border border-border/50 shadow-lg transition-all duration-300 hover:border-border">
+        <div className="h-[450px] w-full max-w-[700px] mx-auto flex flex-col items-center justify-center p-8 bg-gradient-to-b from-background to-muted/50 rounded-xl border border-border/50 shadow-lg transition-all duration-300 hover:border-border focus-within:ring-2 focus-within:ring-primary-300">
           <div className="relative">
             <div className="size-32 rounded-full overflow-hidden transition-transform duration-300 hover:scale-105">
               <Image
@@ -248,10 +328,9 @@ Level: ${jobLevel}
           <h3 className="mt-6 text-xl font-medium">{userName}</h3>
         </div>
       </div>
-
       {/* Transcript Area */}
       {lastMessage && (
-        <div className="flex-none relative rounded-2xl border border-border/50 bg-gradient-to-b from-background to-muted/50 shadow-lg overflow-hidden transition-all duration-300 hover:border-border">
+        <div className="flex-none relative rounded-xl border border-border/50 bg-gradient-to-b from-background to-muted/50 shadow-lg overflow-hidden transition-all duration-300 hover:border-border max-w-xl w-full mx-auto mt-6">
           <div className="p-6 max-h-[200px] overflow-y-auto">
             <p
               key={lastMessage}
@@ -265,30 +344,148 @@ Level: ${jobLevel}
           </div>
         </div>
       )}
-
       {/* Call Controls */}
-      <div className="w-full flex justify-center">
-        {callStatus !== "ACTIVE" ? (
-          <button className="relative btn-call" onClick={() => handleCall()}>
-            <span
-              className={cn(
-                "absolute animate-ping rounded-full opacity-75",
-                callStatus !== "CONNECTING" && "hidden"
-              )}
-            />
-
-            <span className="relative">
-              {callStatus === "INACTIVE" || callStatus === "FINISHED"
-                ? "Call"
-                : ". . ."}
-            </span>
-          </button>
-        ) : (
-          <button className="btn-disconnect" onClick={() => handleDisconnect()}>
-            End
-          </button>
-        )}
+      <TooltipProvider>
+        <div className="w-full flex justify-center gap-4 mt-6">
+          {/* Script Toggle Button - always visible */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full w-12 h-12 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-300 hover:bg-accent"
+                onClick={handleScriptToggle}
+                aria-label={isScriptOpen ? "Hide Script" : "Show Script"}
+                aria-pressed={isScriptOpen}
+              >
+                {isScriptOpen ? (
+                  <FileText className="h-5 w-5" />
+                ) : (
+                  <File className="h-5 w-5" />
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top">
+              {isScriptOpen ? "Hide Script" : "Show Script"}
+            </TooltipContent>
+          </Tooltip>
+          {callStatus !== "ACTIVE" ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  className="relative btn-call focus:outline-none focus:ring-2 focus:ring-primary-300"
+                  onClick={() => handleCall()}
+                >
+                  <span
+                    className={cn(
+                      "absolute animate-ping rounded-full opacity-75",
+                      callStatus !== "CONNECTING" && "hidden"
+                    )}
+                  />
+                  <span className="relative">
+                    {callStatus === "INACTIVE" || callStatus === "FINISHED"
+                      ? "Call"
+                      : ". . ."}
+                  </span>
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="top">Start Call</TooltipContent>
+            </Tooltip>
+          ) : (
+            <>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className={cn(
+                      "rounded-full w-12 h-12 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-300",
+                      isMuted
+                        ? "bg-destructive hover:bg-destructive/90"
+                        : "hover:bg-accent"
+                    )}
+                    onClick={handleMuteToggle}
+                  >
+                    {isMuted ? (
+                      <MicOff className="h-5 w-5" />
+                    ) : (
+                      <Mic className="h-5 w-5" />
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  {isMuted ? "Unmute Microphone" : "Mute Microphone"}
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    className="btn-disconnect focus:outline-none focus:ring-2 focus:ring-destructive-300"
+                    onClick={() => handleDisconnect()}
+                  >
+                    End
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="top">End Call</TooltipContent>
+              </Tooltip>
+            </>
+          )}
+        </div>
+      </TooltipProvider>
+      {/* Volume Meter */}
+      <div className="w-full flex justify-center mt-2">
+        <div className="h-2 w-48 bg-muted rounded-full overflow-hidden">
+          <div
+            className="h-2 bg-primary transition-all duration-200"
+            style={{ width: `${Math.round(volumeLevel * 100)}%` }}
+          />
+        </div>
       </div>
+      {/* Script Panel Overlay */}
+      {isScriptOpen && (
+        <div className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-background border-l border-border shadow-2xl flex flex-col h-full animate-slideIn transition-all duration-300">
+          <div className="flex justify-end p-2">
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={handleScriptToggle}
+              aria-label="Close Script Panel"
+            >
+              <span className="text-lg">×</span>
+            </Button>
+          </div>
+          <div className="flex-1 overflow-y-auto">
+            {isScriptLoading ? (
+              <ScriptSkeleton />
+            ) : script ? (
+              <ScriptPanel
+                script={script}
+                jobId={jobId ?? ""}
+                userId={userId ?? "Guest"}
+                userName={userName}
+              />
+            ) : scriptError ? (
+              <div className="p-4 text-destructive">{scriptError}</div>
+            ) : null}
+          </div>
+        </div>
+      )}
+      {/* Transcript Console (Developer) */}
+      {messages.length > 0 && (
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-full max-w-2xl bg-black/80 text-primary-100 rounded-lg p-4 shadow-lg font-mono text-xs max-h-48 overflow-y-auto border border-primary-900">
+          <div className="mb-2 font-bold text-primary-200">
+            Transcript Console
+          </div>
+          {messages.map((msg, idx) => (
+            <div key={idx} className="mb-1">
+              <span className="font-semibold text-primary-300">
+                [{msg.role}]
+              </span>{" "}
+              {msg.content}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
