@@ -72,6 +72,27 @@ const PracticeLoading = () => {
           {/* Left/Main Area: Agent Skeleton */}
           <div className="flex-1 flex flex-col justify-center min-h-0 rounded-xl bg-gradient-to-b from-background to-muted/50 border border-border/40 shadow-2xl p-0 sm:p-4">
             <div className="flex flex-col justify-center items-center h-full w-full gap-y-4 relative">
+              {/* Persona Selector Skeleton */}
+              <div className="flex flex-col sm:flex-row gap-2 items-center mb-2 w-full max-w-xl">
+                <Skeleton
+                  className="h-5 w-32 mr-2"
+                  aria-label="Loading persona label"
+                />
+                <Skeleton
+                  className="h-10 w-40"
+                  aria-label="Loading persona dropdown"
+                />
+                <Skeleton
+                  className="h-8 w-24 ml-2"
+                  aria-label="Loading randomize button"
+                />
+              </div>
+              <div className="w-full max-w-xl mb-2">
+                <Skeleton
+                  className="h-4 w-3/4"
+                  aria-label="Loading persona description"
+                />
+              </div>
               {/* Profile Cards Container */}
               <div className="flex flex-col sm:flex-row gap-6 w-full justify-center items-center">
                 {/* AI Interviewer Card Skeleton */}
@@ -139,10 +160,7 @@ const PracticeLoading = () => {
               </div>
             </div>
           </div>
-          {/* Right Area: Script Panel Placeholder (not always visible) */}
-          <div className="w-full lg:w-[400px] h-full min-h-0 flex flex-col rounded-xl bg-gradient-to-b from-background to-muted/50 border border-border/40 shadow-2xl opacity-50 pointer-events-none">
-            {/* Optionally, you could render <ScriptSkeleton /> here if you want to show the panel loading */}
-          </div>
+          {/* No right-side script panel skeleton by default, matches Agent behavior */}
         </div>
       </div>
     </main>
