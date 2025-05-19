@@ -7,12 +7,20 @@ import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { interviewer } from "@/constants";
+import { Persona, personas } from "@/constants/personas";
 import {
   createFeedback,
   createScript,
@@ -66,6 +74,7 @@ const Agent = ({
   const [script, setScript] = useState<Script | null>(null);
   const [scriptError, setScriptError] = useState<string | null>(null);
   const [volumeLevel, setVolumeLevel] = useState(0);
+  const [selectedPersona, setSelectedPersona] = useState<Persona>(personas[0]);
 
   // Add metrics tracking
   const [metrics, setMetrics] = useState({
@@ -123,6 +132,16 @@ const Agent = ({
     } else {
       setIsScriptOpen(false);
     }
+  };
+
+  const handlePersonaChange = (key: string) => {
+    const persona = personas.find((p) => p.key === key) || personas[0];
+    setSelectedPersona(persona);
+  };
+
+  const handleRandomizePersona = () => {
+    const randomIndex = Math.floor(Math.random() * personas.length);
+    setSelectedPersona(personas[randomIndex]);
   };
 
   useEffect(() => {
@@ -242,21 +261,18 @@ const Agent = ({
             jobTitle,
             jobDomain,
             jobLevel,
+            persona: selectedPersona.key,
           },
           clientMessages: [],
           serverMessages: [],
         });
       } else {
-        // Ensure all required job context variables are available
         if (!jobTitle || !jobDomain || !jobLevel) {
           throw new Error("Missing job information");
         }
 
-        const jobContext = `
-Job Title: ${jobTitle}
-Domain: ${jobDomain}
-Level: ${jobLevel}
-        `;
+        const jobContext = `\nJob Title: ${jobTitle}\nDomain: ${jobDomain}\nLevel: ${jobLevel}\n        `;
+        const personaInstructions = selectedPersona.behavioralGuidelines;
 
         await vapi.start(interviewer, {
           variableValues: {
@@ -264,6 +280,8 @@ Level: ${jobLevel}
             jobTitle,
             jobDomain,
             jobLevel,
+            personaInstructions,
+            persona: selectedPersona.key,
           },
           clientMessages: [],
           serverMessages: [],
@@ -288,6 +306,43 @@ Level: ${jobLevel}
 
   return (
     <div className="flex flex-col justify-center items-center h-full w-full gap-y-4 relative">
+      {/* Persona Selector */}
+      <div className="flex flex-col sm:flex-row gap-2 items-center mb-2 w-full max-w-xl">
+        <label
+          htmlFor="persona-select"
+          className="text-sm font-medium mr-2 whitespace-nowrap"
+        >
+          Customer Persona:
+        </label>
+        <Select value={selectedPersona.key} onValueChange={handlePersonaChange}>
+          <SelectTrigger className="w-40" id="persona-select">
+            <SelectValue placeholder="Select persona" />
+          </SelectTrigger>
+          <SelectContent>
+            {personas.map((persona) => (
+              <SelectItem key={persona.key} value={persona.key}>
+                {persona.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Button
+          size="sm"
+          variant="outline"
+          className="ml-2"
+          onClick={handleRandomizePersona}
+        >
+          Randomize
+        </Button>
+      </div>
+      <div className="w-full max-w-xl mb-2">
+        <span
+          className="block text-xs text-muted-foreground truncate"
+          title={selectedPersona.description}
+        >
+          {selectedPersona.description}
+        </span>
+      </div>
       {/* Profile Cards Container */}
       <div className="flex flex-col sm:flex-row gap-6 w-full justify-center items-center">
         {/* AI Interviewer Card */}

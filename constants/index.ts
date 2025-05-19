@@ -62,6 +62,9 @@ Your goal is to challenge the agent like a real customer would — using natural
 Job Context:
 {{jobContext}}
 
+// Persona-specific behavioral guidelines will be injected here:
+{{personaInstructions}}
+
 Behavior Guidelines:
 
 1. **Start with a basic greeting** like:
@@ -102,6 +105,7 @@ Important:
 
 Use the following structure to guide your flow:
 {{questions}} // optional sales flow structure (if provided)
+{{personaInstructions}}
 `,
       },
     ],
@@ -347,11 +351,6 @@ export const navigationData = {
       icon: LayoutDashboard,
     },
     {
-      title: "Sales Domains",
-      url: "/dashboard/domains",
-      icon: Layers,
-    },
-    {
       title: "Sales Jobs",
       url: "/dashboard/jobs",
       icon: Briefcase,
@@ -437,6 +436,11 @@ export const navigationData = {
       name: "Word Assistant",
       url: "/word-assistant",
       icon: FileText,
+    },
+    {
+      name: "Domains",
+      url: "/dashboard/domains",
+      icon: Layers,
     },
   ],
 };
