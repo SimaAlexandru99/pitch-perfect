@@ -1,76 +1,97 @@
 "use client";
-import {Button} from "@/components/ui/button";
-import {ArrowRight, Mic} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, CirclePlay } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
-const Hero = () => (
-    <section
-        id="hero"
-        className="relative flex flex-col items-center justify-center min-h-[70vh] py-24 text-center overflow-hidden bg-gradient-to-b from-background to-muted/20"
-    >
-        {/* Animated blurred background blob */}
-        <div
-            className="absolute -top-32 left-1/2 -translate-x-1/2 w-[480px] h-[320px] bg-gradient-to-tr from-primary/20 via-indigo-300/10 to-sky-300/10 rounded-full blur-3xl opacity-40 animate-blob z-0"/>
-        {/* Tagline */}
-        <span className="relative z-10 mb-4 text-base sm:text-lg font-medium text-primary/80 tracking-wide uppercase">
-      AI-powered sales call training
-    </span>
-        {/* Main Title */}
-        <div className="relative z-10 flex flex-col items-center gap-4">
-            <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight flex items-center gap-3">
-                <Mic
-                    className="inline-block text-primary w-12 h-12 animate-pulse drop-shadow-lg"
-                    aria-label="microphone"
-                />
-                <span className="bg-gradient-to-r from-primary via-indigo-500 to-sky-500 bg-clip-text text-transparent">
-          PitchPerfect AI
-        </span>
-            </h1>
-            <p className="text-lg sm:text-2xl text-muted-foreground max-w-2xl mt-2">
-                Train your sales voice. Pitch like a pro.
-            </p>
-            <div className="flex gap-4 mt-8 flex-wrap justify-center">
-                <Button asChild size="lg" className="px-8 py-4 text-lg shadow-lg">
-                    <Link
-                        href="/dashboard"
-                        scroll={true}
-                        className="flex items-center gap-2"
-                    >
-                        Start Training <ArrowRight className="w-5 h-5"/>
-                    </Link>
-                </Button>
-                <Button
-                    asChild
-                    variant="outline"
-                    size="lg"
-                    className="px-8 py-4 text-lg"
-                >
-                    <Link href="#" scroll={true}>
-                        View Demo
-                    </Link>
-                </Button>
-            </div>
-        </div>
-        {/* Keyframes for blob animation */}
-        <style jsx>{`
-            @keyframes blob {
-                0%,
-                100% {
-                    transform: translate(-50%, 0) scale(1);
-                }
-                33% {
-                    transform: translate(-48%, 10px) scale(1.05, 0.97);
-                }
-                66% {
-                    transform: translate(-52%, -10px) scale(0.97, 1.05);
-                }
-            }
+const trustedLogos = [
+  {
+    src: "https://html.tailus.io/blocks/customers/column.svg",
+    alt: "Column Logo",
+    height: 16,
+    width: 72,
+  },
+  {
+    src: "https://html.tailus.io/blocks/customers/nvidia.svg",
+    alt: "Nvidia Logo",
+    height: 20,
+    width: 72,
+  },
+  {
+    src: "https://html.tailus.io/blocks/customers/github.svg",
+    alt: "GitHub Logo",
+    height: 16,
+    width: 72,
+  },
+];
 
-            .animate-blob {
-                animation: blob 12s infinite linear;
-            }
-        `}</style>
+const Hero = () => (
+  <main className="overflow-hidden">
+    <section className="bg-gradient-to-b from-background to-muted/20">
+      <div className="relative py-24 md:py-36">
+        <div className="relative z-10 mx-auto w-full max-w-6xl px-6 flex flex-col md:flex-row items-center gap-16">
+          {/* Left: Text & Actions */}
+          <div className="w-full md:w-1/2 flex flex-col items-start">
+            <h1 className="max-w-md text-balance text-4xl font-extrabold md:text-6xl tracking-tight">
+              AI-powered sales call training
+            </h1>
+            <p className="text-muted-foreground my-8 max-w-2xl text-balance text-lg md:text-xl">
+              Train your sales voice. Pitch like a pro. One tool for practice,
+              feedback, and improvement—right inside PitchPerfect AI.
+            </p>
+            <div className="flex items-center gap-3 flex-wrap">
+              <Button asChild size="lg" className="pr-4.5">
+                <Link href="/dashboard">
+                  <span className="text-nowrap">Start Training</span>
+                  <ArrowRight className="opacity-50 ml-1" />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="pl-5">
+                <Link href="#demo">
+                  <CirclePlay className="fill-primary/25 stroke-primary mr-2" />
+                  <span className="text-nowrap">Watch Demo</span>
+                </Link>
+              </Button>
+            </div>
+            <div className="mt-10">
+              <p className="text-muted-foreground text-sm">
+                Trusted by teams at:
+              </p>
+              <div className="mt-6 grid max-w-xs grid-cols-3 gap-6">
+                {trustedLogos.map((logo) => (
+                  <div className="flex items-center" key={logo.alt}>
+                    <Image
+                      src={logo.src}
+                      alt={logo.alt}
+                      height={logo.height}
+                      width={logo.width}
+                      className="h-4 w-auto object-contain"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          {/* Right: Product Image */}
+          <div className="w-full md:w-1/2 flex justify-center md:justify-end">
+            <div className="relative before:border-foreground/5 before:bg-foreground/5 before:absolute before:-inset-x-4 before:bottom-7 before:top-0 before:skew-x-6 before:rounded-[calc(var(--radius)+1rem)] before:border">
+              <div className="bg-background rounded-2xl shadow-foreground/10 ring-foreground/5 relative h-full -translate-y-8 skew-x-6 overflow-hidden border border-transparent shadow-md ring-1">
+                <Image
+                  src="/tailark.png"
+                  alt="PitchPerfect AI app screenshot"
+                  width={720}
+                  height={480}
+                  className="object-top-left w-full h-auto object-cover min-h-[240px]"
+                  priority
+                  quality={90}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
+  </main>
 );
 
 export default Hero;

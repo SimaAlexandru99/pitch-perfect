@@ -491,8 +491,32 @@ const Agent = ({
       <div className="w-full flex justify-center mt-2">
         <div className="h-2 w-48 bg-muted rounded-full overflow-hidden">
           <div
-            className="h-2 bg-primary transition-all duration-200"
-            style={{ width: `${Math.round(volumeLevel * 100)}%` }}
+            className={
+              `h-2 bg-primary transition-all duration-200 ` +
+              (volumeLevel === 0
+                ? "w-0"
+                : volumeLevel < 0.1
+                ? "w-1/12"
+                : volumeLevel < 0.2
+                ? "w-1/6"
+                : volumeLevel < 0.3
+                ? "w-1/4"
+                : volumeLevel < 0.4
+                ? "w-1/3"
+                : volumeLevel < 0.5
+                ? "w-2/5"
+                : volumeLevel < 0.6
+                ? "w-1/2"
+                : volumeLevel < 0.7
+                ? "w-3/5"
+                : volumeLevel < 0.8
+                ? "w-2/3"
+                : volumeLevel < 0.9
+                ? "w-3/4"
+                : volumeLevel < 1
+                ? "w-11/12"
+                : "w-full")
+            }
           />
         </div>
       </div>

@@ -1,13 +1,13 @@
-import Hero from "@/components/Hero";
-import HowItWorks from "@/components/HowItWorks";
-import Industries from "@/components/Industries";
+import FeaturesSection from "@/components/features-six";
+import HeroSection from "@/components/hero-section-one";
+import Integrations from "@/components/integrations-three";
 
 export default function Home() {
-    return (
-        <div>
-            <Hero/>
-            <HowItWorks/>
-            <Industries/>
-        </div>
-    );
+  return (
+    <div className="bg-background">
+      <HeroSection />
+      <FeaturesSection />
+      <Integrations />
+    </div>
+  );
 }
