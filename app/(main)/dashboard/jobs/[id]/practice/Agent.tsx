@@ -1,5 +1,6 @@
 "use client";
 
+import { Switch } from "@/components/ui/switch";
 import { File, FileText, Mic, MicOff } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -78,6 +79,7 @@ const Agent = ({
   const [partialTranscript, setPartialTranscript] = useState<string | null>(
     null
   );
+  const [isCoachMode, setIsCoachMode] = useState(false);
 
   // Add metrics tracking
   const [metrics, setMetrics] = useState({
@@ -174,6 +176,7 @@ const Agent = ({
     };
 
     const onMessage = (message: Message) => {
+      console.debug("onMessage", message);
       if (message.type !== "transcript") return;
       if (message.transcriptType === "partial") {
         setPartialTranscript(message.transcript);
@@ -229,8 +232,7 @@ const Agent = ({
     }
 
     const handleGenerateFeedback = async (messages: SavedMessage[]) => {
-      console.log("handleGenerateFeedback");
-
+      console.debug("messages before feedback", messages);
       const { success, feedbackId: id } = await createFeedback({
         jobId,
         userId: userId!,
@@ -255,6 +257,17 @@ const Agent = ({
       }
     }
   }, [messages, callStatus, feedbackId, jobId, router, type, userId, metrics]);
+
+  // Helper to get interviewer config with or without coach mode
+  const getInterviewerConfig = () => {
+    if (!isCoachMode) return interviewer;
+    const coachInterviewer = structuredClone(interviewer);
+    const systemMsg = coachInterviewer.model?.messages?.[0];
+    if (systemMsg) {
+      systemMsg.content += `\n---\nCOACH MODE:\nAt the end of the conversation, or if the agent requests feedback by saying something like \"Can I get feedback?\", provide a brief, constructive summary of the agent's performance, including strengths and areas for improvement. Speak as a coach, not as a customer.`;
+    }
+    return coachInterviewer;
+  };
 
   const handleCall = async () => {
     try {
@@ -282,7 +295,7 @@ const Agent = ({
         const jobContext = `\nJob Title: ${jobTitle}\nDomain: ${jobDomain}\nLevel: ${jobLevel}\n        `;
         const personaInstructions = selectedPersona.behavioralGuidelines;
 
-        await vapi.start(interviewer, {
+        await vapi.start(getInterviewerConfig(), {
           variableValues: {
             jobContext,
             jobTitle,
@@ -315,6 +328,16 @@ const Agent = ({
   return (
     <div className="flex flex-col justify-center items-center h-full w-full gap-y-4 relative">
       {/* Persona Selector */}
+      <div className="flex items-center gap-2 mb-2">
+        <Switch
+          checked={isCoachMode}
+          onCheckedChange={setIsCoachMode}
+          id="coach-mode"
+        />
+        <label htmlFor="coach-mode" className="text-sm">
+          AI Coach Mode
+        </label>
+      </div>
       <div className="flex flex-col sm:flex-row gap-2 items-center mb-2 w-full max-w-xl">
         <label
           htmlFor="persona-select"

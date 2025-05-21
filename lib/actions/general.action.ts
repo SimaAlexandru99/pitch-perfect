@@ -93,6 +93,8 @@ Description: ${job.description}
         ? Math.round(metrics.totalDuration / (messageCount / 2))
         : 0;
 
+    console.debug("transcript", transcript);
+
     const { object } = await generateObject({
       model: google("gemini-2.0-flash-001", {
         structuredOutputs: false,
