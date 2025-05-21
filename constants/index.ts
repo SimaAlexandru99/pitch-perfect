@@ -30,8 +30,6 @@ export const interviewer: CreateAssistantDTO = {
   name: "Sales Simulation Client",
   firstMessage:
     "Hello? I'm a potential customer interested in {{jobTitle}} in the {{jobDomain}} sector. I understand this is a {{jobLevel}} level position. When you're ready, please introduce yourself and your company.",
-  clientMessages: [],
-  serverMessages: [],
   transcriber: {
     provider: "deepgram",
     model: "nova-2",

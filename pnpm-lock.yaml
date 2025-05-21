@@ -124,8 +124,8 @@ importers:
         specifier: ^19.1.5
         version: 19.1.5(@types/react@19.1.5)
       '@vapi-ai/web':
-        specifier: ^2.3.0
-        version: 2.3.0
+        specifier: 2.2.5
+        version: 2.2.5
       ai:
         specifier: ^4.3.16
         version: 4.3.16(react@19.1.0)(zod@3.25.17)
@@ -566,8 +566,8 @@ packages:
     resolution: {integrity: sha512-7/5LRgykyOfQENcm6hDKP8SX/u9XxE5YOiWOkgkwcoO+cG8xT/cyOvp9wwN3IxfdYgpHs8CE7Nq2PKX2lNaEXw==}
     engines: {node: '>=14'}
 
-  '@grpc/grpc-js@1.13.3':
-    resolution: {integrity: sha512-FTXHdOoPbZrBjlVLHuKbDZnsTxXv2BlHF57xw6LuThXacXvtkahEPED0CKMk6obZDf65Hv4k3z62eyPNpvinIg==}
+  '@grpc/grpc-js@1.13.4':
+    resolution: {integrity: sha512-GsFaMXCkMqkKIvwCQjCrwH+GHbPKBjhwo/8ZuUkWHqbI73Kky9I+pQltrlT0+MWpedCoosda53lgjYfyEPgxBg==}
     engines: {node: '>=12.10.0'}
 
   '@grpc/grpc-js@1.9.15':
@@ -1785,8 +1785,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@vapi-ai/web@2.3.0':
-    resolution: {integrity: sha512-9Xk5UGQvVaU7kChatRqGAfBXZCvpxLye+N5JlX2yu9RUmimPrQdTz8A/QBB3pIM2Q+1bkoP5v0pnooIkvOdFAQ==}
+  '@vapi-ai/web@2.2.5':
+    resolution: {integrity: sha512-KaBVPEr9m054QFj4570HWOMJYgUB86evBWR2Yc5PN63lers1x3TFlSJCKQO5Qeoif0tJ4t5AVRrfF9KlUaz3Sg==}
 
   abort-controller@3.0.0:
     resolution: {integrity: sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==}
@@ -4380,7 +4380,7 @@ snapshots:
       - supports-color
     optional: true
 
-  '@grpc/grpc-js@1.13.3':
+  '@grpc/grpc-js@1.13.4':
     dependencies:
       '@grpc/proto-loader': 0.7.15
       '@js-sdsl/ordered-map': 4.4.2
@@ -5537,7 +5537,7 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.7.2':
     optional: true
 
-  '@vapi-ai/web@2.3.0':
+  '@vapi-ai/web@2.2.5':
     dependencies:
       '@daily-co/daily-js': 0.75.2
       events: 3.3.0
@@ -6489,7 +6489,7 @@ snapshots:
 
   google-gax@4.6.1:
     dependencies:
-      '@grpc/grpc-js': 1.13.3
+      '@grpc/grpc-js': 1.13.4
       '@grpc/proto-loader': 0.7.15
       '@types/long': 4.0.2
       abort-controller: 3.0.0

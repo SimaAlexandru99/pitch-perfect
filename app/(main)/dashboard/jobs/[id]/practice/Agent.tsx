@@ -155,7 +155,7 @@ const Agent = ({
       setCallStartTime(Date.now());
     };
 
-    const onCallEnd = (reason?: string) => {
+    const onCallEnd = () => {
       setCallStatus(CallStatus.FINISHED);
       setIsSpeaking(false);
 
@@ -167,16 +167,9 @@ const Agent = ({
         silenceTime:
           totalDuration - prev.userSpeakingTime - prev.aiSpeakingTime,
       }));
-
-      if (reason === "ejection") {
-        console.log(
-          "The call was ended unexpectedly. Don't worry - your feedback will be saved."
-        );
-      }
     };
 
     const onMessage = (message: Message) => {
-      console.debug("onMessage", message);
       if (message.type !== "transcript") return;
       if (message.transcriptType === "partial") {
         setPartialTranscript(message.transcript);
@@ -197,11 +190,7 @@ const Agent = ({
       setIsSpeaking(false);
     };
 
-    const onError = (error: Error) => {
-      console.error("Call error:", error);
-      console.log(
-        "The call was ended unexpectedly. Don't worry - your feedback will be saved."
-      );
+    const onError = () => {
       setCallStatus(CallStatus.FINISHED);
     };
 
@@ -232,7 +221,6 @@ const Agent = ({
     }
 
     const handleGenerateFeedback = async (messages: SavedMessage[]) => {
-      console.debug("messages before feedback", messages);
       const { success, feedbackId: id } = await createFeedback({
         jobId,
         userId: userId!,
@@ -244,7 +232,6 @@ const Agent = ({
       if (success && id) {
         router.push(`/dashboard/jobs/${jobId}/feedback`);
       } else {
-        console.log("Error saving feedback");
         router.push("/");
       }
     };
@@ -284,8 +271,6 @@ const Agent = ({
             jobLevel,
             persona: selectedPersona.key,
           },
-          clientMessages: [],
-          serverMessages: [],
         });
       } else {
         if (!jobTitle || !jobDomain || !jobLevel) {
@@ -304,13 +289,9 @@ const Agent = ({
             personaInstructions,
             persona: selectedPersona.key,
           },
-          clientMessages: [],
-          serverMessages: [],
         });
       }
-    } catch (error) {
-      console.error("Error starting call:", error);
-      console.log("Failed to start the call. Please try again.");
+    } catch {
       setCallStatus(CallStatus.INACTIVE);
     }
   };
@@ -319,9 +300,8 @@ const Agent = ({
     try {
       setCallStatus(CallStatus.FINISHED);
       vapi.stop();
-    } catch (error) {
-      console.error("Error disconnecting:", error);
-      console.log("Error ending the call. Please try again.");
+    } catch {
+      setCallStatus(CallStatus.INACTIVE);
     }
   };
 
@@ -414,7 +394,7 @@ const Agent = ({
           <h3 className="mt-6 text-xl font-medium">{userName}</h3>
         </div>
       </div>
-      {/* Transcript Area */}
+      {/* Message Display */}
       {(lastMessage || partialTranscript) && (
         <div className="flex-none relative rounded-xl border border-border/50 bg-gradient-to-b from-background to-muted/50 shadow-lg overflow-hidden transition-all duration-300 hover:border-border max-w-xl w-full mx-auto mt-6">
           <div className="p-6 max-h-[200px] overflow-y-auto">
@@ -585,22 +565,6 @@ const Agent = ({
               <div className="p-4 text-destructive">{scriptError}</div>
             ) : null}
           </div>
-        </div>
-      )}
-      {/* Transcript Console (Developer) */}
-      {messages.length > 0 && (
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-full max-w-2xl bg-black/80 text-primary-100 rounded-lg p-4 shadow-lg font-mono text-xs max-h-48 overflow-y-auto border border-primary-900">
-          <div className="mb-2 font-bold text-primary-200">
-            Transcript Console
-          </div>
-          {messages.map((msg, idx) => (
-            <div key={idx} className="mb-1">
-              <span className="font-semibold text-primary-300">
-                [{msg.role}]
-              </span>{" "}
-              {msg.content}
-            </div>
-          ))}
         </div>
       )}
     </div>
