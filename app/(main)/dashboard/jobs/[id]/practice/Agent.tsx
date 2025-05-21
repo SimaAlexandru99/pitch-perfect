@@ -75,6 +75,9 @@ const Agent = ({
   const [scriptError, setScriptError] = useState<string | null>(null);
   const [volumeLevel, setVolumeLevel] = useState(0);
   const [selectedPersona, setSelectedPersona] = useState<Persona>(personas[0]);
+  const [partialTranscript, setPartialTranscript] = useState<string | null>(
+    null
+  );
 
   // Add metrics tracking
   const [metrics, setMetrics] = useState({
@@ -171,9 +174,14 @@ const Agent = ({
     };
 
     const onMessage = (message: Message) => {
-      if (message.type === "transcript" && message.transcriptType === "final") {
+      if (message.type !== "transcript") return;
+      if (message.transcriptType === "partial") {
+        setPartialTranscript(message.transcript);
+      }
+      if (message.transcriptType === "final") {
         const newMessage = { role: message.role, content: message.transcript };
         setMessages((prev) => [...prev, newMessage]);
+        setPartialTranscript(null);
       }
     };
 
@@ -384,18 +392,25 @@ const Agent = ({
         </div>
       </div>
       {/* Transcript Area */}
-      {lastMessage && (
+      {(lastMessage || partialTranscript) && (
         <div className="flex-none relative rounded-xl border border-border/50 bg-gradient-to-b from-background to-muted/50 shadow-lg overflow-hidden transition-all duration-300 hover:border-border max-w-xl w-full mx-auto mt-6">
           <div className="p-6 max-h-[200px] overflow-y-auto">
-            <p
-              key={lastMessage}
-              className={cn(
-                "text-lg leading-relaxed transition-opacity duration-500",
-                "animate-fadeIn"
-              )}
-            >
-              {lastMessage}
-            </p>
+            {lastMessage && (
+              <p
+                key={lastMessage}
+                className={cn(
+                  "text-lg leading-relaxed transition-opacity duration-500",
+                  "animate-fadeIn"
+                )}
+              >
+                {lastMessage}
+              </p>
+            )}
+            {partialTranscript && (
+              <p className="text-muted-foreground italic animate-pulse mt-2">
+                {partialTranscript}
+              </p>
+            )}
           </div>
         </div>
       )}

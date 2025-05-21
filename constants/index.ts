@@ -6,8 +6,6 @@ import {
   Car,
   Cloud,
   CreditCard,
-  Database,
-  FileBarChart2,
   FileScan,
   FileText,
   GraduationCap,
@@ -107,6 +105,11 @@ Use the following structure to guide your flow:
 {{questions}} // optional sales flow structure (if provided)
 {{personaInstructions}}
 `,
+      },
+    ],
+    tools: [
+      {
+        type: "endCall",
       },
     ],
   },
@@ -422,21 +425,6 @@ export const navigationData = {
     },
   ],
   documents: [
-    {
-      name: "Data Library",
-      url: "/data-library",
-      icon: Database,
-    },
-    {
-      name: "Reports",
-      url: "/reports",
-      icon: FileBarChart2,
-    },
-    {
-      name: "Word Assistant",
-      url: "/word-assistant",
-      icon: FileText,
-    },
     {
       name: "Domains",
       url: "/dashboard/domains",

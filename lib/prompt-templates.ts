@@ -1,18 +1,18 @@
 // Utility to generate sales prompts for different domains
 export function createSalesPrompt({
-                                      industry,
-                                      intro,
-                                      pitch,
-                                      objections,
-                                      closing,
-                                  }: {
-    industry: string;
-    intro: string;
-    pitch: string;
-    objections: string[];
-    closing: string;
+  industry,
+  intro,
+  pitch,
+  objections,
+  closing,
+}: {
+  industry: string;
+  intro: string;
+  pitch: string;
+  objections: string[];
+  closing: string;
 }) {
-    return `
+  return `
 You are a professional ${industry} sales agent creating a script for ${industry} products. The script should include:
 
 1. **Introduction**: ${intro}

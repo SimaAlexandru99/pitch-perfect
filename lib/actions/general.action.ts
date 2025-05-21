@@ -596,3 +596,29 @@ export async function getScript(
     return null;
   }
 }
+
+/**
+ * Deletes feedback for a specific job and user.
+ */
+export async function deleteFeedbackByJobIdUserId(
+  jobId: string,
+  userId: string
+) {
+  try {
+    const querySnapshot = await db
+      .collection("feedback")
+      .where("jobId", "==", jobId)
+      .where("userId", "==", userId)
+      .limit(1)
+      .get();
+
+    if (querySnapshot.empty) return { success: false };
+
+    const feedbackDoc = querySnapshot.docs[0];
+    await db.collection("feedback").doc(feedbackDoc.id).delete();
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting feedback:", error);
+    return { success: false };
+  }
+}

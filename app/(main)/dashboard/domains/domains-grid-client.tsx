@@ -103,7 +103,12 @@ export default function DomainsGridClient() {
         open={!!openDomain}
         onOpenChange={(open) => !open && setOpenDomain(null)}
       >
-        {openDomain && <QuickCreateDialog selectedDomain={openDomain} />}
+        {openDomain && (
+          <QuickCreateDialog
+            selectedDomain={openDomain}
+            onClose={() => setOpenDomain(null)}
+          />
+        )}
       </Dialog>
     </>
   );
