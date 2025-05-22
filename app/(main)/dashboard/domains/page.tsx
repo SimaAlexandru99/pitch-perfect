@@ -23,7 +23,7 @@ export default function DomainsPage() {
         backHref="/dashboard"
         backLabel="Back to Dashboard"
       />
-      <div className="flex-1 p-4 sm:p-8 pt-8 sm:pt-12">
+      <div className="flex-1 p-4 sm:p-8 pt-16 sm:pt-16">
         <div className="mx-auto max-w-[1500px] h-full">
           <DomainsGridClient />
         </div>

@@ -14,57 +14,93 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { deleteFeedbackByJobIdUserId } from "@/lib/actions/general.action";
+import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import {
-  ArrowLeft,
-  BriefcaseIcon,
-  Download,
-  GraduationCapIcon,
-  LayersIcon,
-} from "lucide-react";
+import { ArrowLeft, Download, Trophy } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useTransition } from "react";
+
+interface BadgeInfo {
+  icon: React.ElementType;
+  label: string;
+}
 
 interface HeaderBarProps {
   title: string;
   description?: string;
-  domain?: string;
-  jobTitle?: string;
-  level?: string;
-  showExport?: boolean;
-  onExport?: () => void;
-  showActions?: boolean;
-  backHref?: string;
-  backLabel?: string;
-  jobId?: string;
-  userId?: string;
+  badges?: BadgeInfo[];
+  actions?: {
+    showExport?: boolean;
+    onExport?: () => void;
+    showPracticeAgain?: boolean;
+    jobId?: string;
+    userId?: string;
+    showBrowseJobs?: boolean;
+  };
+  navigation?: {
+    backHref?: string;
+    backLabel?: string;
+  };
+  children?: React.ReactNode;
 }
+
+const PracticeAgainDialog = ({
+  jobId,
+  userId,
+  isPending,
+  onPracticeAgain,
+}: {
+  jobId: string;
+  userId: string;
+  isPending: boolean;
+  onPracticeAgain: () => void;
+}) => (
+  <AlertDialog>
+    <AlertDialogTrigger asChild>
+      <Button size="sm" variant="default" disabled={isPending}>
+        Practice Again
+      </Button>
+    </AlertDialogTrigger>
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>Practice Again?</AlertDialogTitle>
+        <AlertDialogDescription>
+          This will delete your current feedback and let you retry the practice
+          interview for this job. Are you sure you want to continue?
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+        <AlertDialogAction disabled={isPending} onClick={onPracticeAgain}>
+          Yes, Practice Again
+        </AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
+);
 
 export default function HeaderBar({
   title,
   description,
-  domain,
-  jobTitle,
-  level,
-  showExport = false,
-  onExport,
-  showActions = false,
-  backHref,
-  backLabel = "Back",
-  jobId,
-  userId,
+  badges = [],
+  actions = {},
+  navigation,
+  children,
 }: HeaderBarProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
+  const isGamesPage = pathname?.includes("/games");
 
   const handlePracticeAgain = async () => {
-    if (!jobId || !userId) return;
-    const res = await deleteFeedbackByJobIdUserId(jobId, userId);
+    if (!actions.jobId || !actions.userId) return;
+    const res = await deleteFeedbackByJobIdUserId(
+      actions.jobId,
+      actions.userId
+    );
     if (res.success) {
-      router.push(`/dashboard/jobs/${jobId}/practice`);
-    } else {
-      // Optionally show error toast
+      router.push(`/dashboard/jobs/${actions.jobId}/practice`);
     }
   };
 
@@ -73,105 +109,122 @@ export default function HeaderBar({
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="sticky top-0 z-30 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+      className={cn(
+        "sticky top-0 z-30 border-b backdrop-blur supports-[backdrop-filter]",
+        isGamesPage
+          ? "bg-gradient-to-r from-slate-800/95 via-slate-900/95 to-slate-800/95 border-primary/30"
+          : "bg-background/95 supports-[backdrop-filter]:bg-background/60"
+      )}
     >
       <div className="flex h-14 items-center px-3 sm:px-4">
-        {backHref && (
+        {navigation?.backHref && (
           <Button
             asChild
             variant="ghost"
             size="icon"
-            className="text-muted-foreground hover:text-foreground mr-2 sm:mr-4"
+            className={cn(
+              "mr-2 sm:mr-4",
+              isGamesPage
+                ? "text-white/75 hover:text-white hover:bg-slate-800/50"
+                : "text-muted-foreground hover:text-foreground"
+            )}
           >
-            <Link href={backHref}>
+            <Link href={navigation.backHref}>
               <ArrowLeft className="h-5 w-5" />
-              <span className="sr-only">{backLabel}</span>
+              <span className="sr-only">{navigation.backLabel || "Back"}</span>
             </Link>
           </Button>
         )}
 
         <div className="flex flex-1 items-center gap-2 sm:gap-4 overflow-x-auto pb-3 pt-3 scrollbar-none">
           <div className="flex flex-col">
-            <h1 className="text-base sm:text-lg font-semibold whitespace-nowrap">
+            <h1
+              className={cn(
+                "text-base sm:text-lg font-semibold whitespace-nowrap",
+                isGamesPage ? "text-white" : ""
+              )}
+            >
               {title}
             </h1>
             {description && (
-              <p className="text-sm text-muted-foreground">{description}</p>
+              <p
+                className={cn(
+                  "text-sm",
+                  isGamesPage ? "text-white/75" : "text-muted-foreground"
+                )}
+              >
+                {description}
+              </p>
             )}
           </div>
-          {(domain || jobTitle || level) && (
+          {badges.length > 0 && (
             <div className="flex items-center gap-2 min-w-0">
-              {domain && (
+              {badges.map((badge, index) => (
                 <Badge
+                  key={index}
                   variant="outline"
-                  className="gap-1 pl-2 whitespace-nowrap text-xs"
+                  className={cn(
+                    "gap-1 pl-2 whitespace-nowrap text-xs",
+                    isGamesPage && "border-primary/30 text-white/90"
+                  )}
                 >
-                  <BriefcaseIcon className="h-3 w-3" />
-                  {domain}
+                  <badge.icon className="h-3 w-3" />
+                  {badge.label}
                 </Badge>
-              )}
-              {jobTitle && (
-                <Badge
-                  variant="outline"
-                  className="gap-1 pl-2 whitespace-nowrap text-xs"
-                >
-                  <LayersIcon className="h-3 w-3" />
-                  {jobTitle}
-                </Badge>
-              )}
-              {level && (
-                <Badge
-                  variant="outline"
-                  className="gap-1 pl-2 whitespace-nowrap text-xs"
-                >
-                  <GraduationCapIcon className="h-3 w-3" />
-                  {level}
-                </Badge>
-              )}
+              ))}
             </div>
           )}
         </div>
 
         <div className="flex items-center gap-2">
-          {showActions && jobId && userId && (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button size="sm" variant="default" disabled={isPending}>
-                  Practice Again
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Practice Again?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This will delete your current feedback and let you retry the
-                    practice interview for this job. Are you sure you want to
-                    continue?
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel disabled={isPending}>
-                    Cancel
-                  </AlertDialogCancel>
-                  <AlertDialogAction
-                    disabled={isPending}
-                    onClick={() => startTransition(handlePracticeAgain)}
-                  >
-                    Yes, Practice Again
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+          {children}
+          {actions.showPracticeAgain && actions.jobId && actions.userId && (
+            <PracticeAgainDialog
+              jobId={actions.jobId}
+              userId={actions.userId}
+              isPending={isPending}
+              onPracticeAgain={() => startTransition(handlePracticeAgain)}
+            />
           )}
-          <Button asChild variant="outline" size="sm">
-            <Link href="/dashboard/jobs">Browse More Jobs</Link>
+          <Button
+            asChild
+            variant={isGamesPage ? "default" : "outline"}
+            size="sm"
+            className={cn(
+              "gap-2",
+              isGamesPage &&
+                "bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white border-none"
+            )}
+          >
+            <Link href="/dashboard/games">
+              <Trophy className="h-4 w-4" />
+              Games
+            </Link>
           </Button>
-          {showExport && (
+          {actions.showBrowseJobs && (
             <Button
-              variant="outline"
+              asChild
+              variant={isGamesPage ? "outline" : "outline"}
+              className={
+                isGamesPage
+                  ? "border-primary/30 text-white/90 hover:bg-slate-800/50"
+                  : ""
+              }
               size="sm"
-              className="gap-2"
-              onClick={onExport}
+            >
+              <Link href="/dashboard/jobs">Browse More Jobs</Link>
+            </Button>
+          )}
+          {actions.showExport && !children && (
+            <Button
+              variant={isGamesPage ? "outline" : "outline"}
+              size="sm"
+              className={cn(
+                "gap-2",
+                isGamesPage &&
+                  "border-primary/30 text-white/90 hover:bg-slate-800/50"
+              )}
+              onClick={actions.onExport}
             >
               <Download className="h-4 w-4" />
               Export

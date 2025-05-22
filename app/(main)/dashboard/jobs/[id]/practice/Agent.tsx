@@ -1,7 +1,7 @@
 "use client";
 
 import { Switch } from "@/components/ui/switch";
-import { File, FileText, Mic, MicOff } from "lucide-react";
+import { File, FileText, Info, Mic, MicOff } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -314,9 +314,22 @@ const Agent = ({
           onCheckedChange={setIsCoachMode}
           id="coach-mode"
         />
-        <label htmlFor="coach-mode" className="text-sm">
-          AI Coach Mode
-        </label>
+        <div className="flex items-center gap-1">
+          <label htmlFor="coach-mode" className="text-sm">
+            AI Coach Mode
+          </label>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="max-w-[200px]">
+                When enabled, the AI will provide constructive feedback on your
+                performance at the end of the conversation or when requested.
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
       </div>
       <div className="flex flex-col sm:flex-row gap-2 items-center mb-2 w-full max-w-xl">
         <label

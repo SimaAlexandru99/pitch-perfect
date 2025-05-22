@@ -4,6 +4,7 @@ import { QuickCreateDialog } from "@/components/quick-create-dialog";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import {
   Tooltip,
   TooltipContent,
@@ -11,18 +12,71 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { domains } from "@/constants";
-import { Eye, Info, Plus } from "lucide-react";
+import { getJobs } from "@/lib/actions/general.action";
+import { Eye, Info, Plus, Search } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function DomainsGridClient() {
   const [openDomain, setOpenDomain] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [jobCounts, setJobCounts] = useState<Record<string, number>>({});
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchJobCounts = async () => {
+      try {
+        const jobs = await getJobs();
+        if (jobs) {
+          const counts = jobs.reduce((acc, job) => {
+            acc[job.domain] = (acc[job.domain] || 0) + 1;
+            return acc;
+          }, {} as Record<string, number>);
+          setJobCounts(counts);
+        }
+      } catch (error) {
+        console.error("Error fetching job counts:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchJobCounts();
+  }, []);
+
+  const filteredDomains = domains.filter(
+    (domain) =>
+      domain.value.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      domain.label.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {domains.map((domain) => {
+      {/* Header Section */}
+      <div className="mb-20">
+        <div className="flex flex-col gap-4">
+          <h1 className="text-2xl font-semibold">Browse Sales Domains</h1>
+          <p className="text-muted-foreground">
+            Select a domain to explore sales scenarios and practice your skills
+            in different industries.
+          </p>
+          <div className="relative max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Search domains..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
+        {filteredDomains.map((domain) => {
           const DomainIcon = domain.icon;
+          const jobCount = jobCounts[domain.value] || 0;
+
           return (
             <Card
               key={domain.value}
@@ -48,22 +102,40 @@ export default function DomainsGridClient() {
                 <h2 className="text-2xl font-bold capitalize leading-tight tracking-tight text-foreground">
                   {domain.value.replace("_", " ")}
                 </h2>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col items-center gap-2">
                   <p className="text-base text-muted-foreground font-medium">
                     {domain.label}
                   </p>
-                  <TooltipProvider delayDuration={100}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span tabIndex={0} aria-label="Info about this domain">
-                          <Info className="h-5 w-5 text-muted-foreground cursor-help transition-colors group-hover:text-primary" />
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent side="top">
-                        <p>Click to explore jobs in this domain</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <span className="px-2 py-1 bg-primary/10 rounded-full">
+                      {isLoading ? (
+                        <span className="animate-pulse">Loading...</span>
+                      ) : (
+                        `${jobCount} ${
+                          jobCount === 1 ? "Job" : "Jobs"
+                        } Available`
+                      )}
+                    </span>
+                    <TooltipProvider delayDuration={100}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span
+                            tabIndex={0}
+                            aria-label="Info about this domain"
+                          >
+                            <Info className="h-5 w-5 text-muted-foreground cursor-help transition-colors group-hover:text-primary" />
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-[300px]">
+                          <p>
+                            Explore sales scenarios and practice your skills in
+                            this domain. Click to view available jobs or create
+                            a new one.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                 </div>
               </div>
 

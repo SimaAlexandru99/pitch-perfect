@@ -147,7 +147,6 @@ interface GetLatestInterviewsParams {
   limit?: number;
 }
 
-
 // Next.js specific types
 interface RouteParams {
   params: Promise<Record<string, string>>;
@@ -183,3 +182,165 @@ type FirebaseError = {
   code: string;
   message: string;
 };
+
+// Game related types
+interface GameMode {
+  id: string;
+  name: string;
+  description: string;
+  type: "rpg" | "streak" | "timeAttack" | "mystery" | "voiceOlympics";
+  difficulty: "easy" | "medium" | "hard";
+  maxLevel?: number;
+  streakGoal?: number;
+  timeLimit?: number;
+  lives?: number;
+}
+
+interface GameSession {
+  id: string;
+  userId: string;
+  gameModeId: string;
+  currentLevel: number;
+  score: number;
+  lives: number;
+  streak: number;
+  timeRemaining: number;
+  startedAt: Date;
+  status: "active" | "completed" | "failed";
+  feedbackAt?: Date;
+  completedAt?: Date;
+  completedLevels?: number[];
+  xp: number;
+  characterStats: {
+    charisma: number;
+    persuasion: number;
+    confidence: number;
+  };
+  questProgress: {
+    currentQuest: string;
+    objectives: { description: string; completed: boolean }[];
+  };
+}
+
+interface GameFeedback {
+  userName: string;
+  sessionId: string;
+  userId: string;
+  level: number;
+  score: number;
+  timeSpent: number;
+  transcript: Array<{
+    role: "system" | "assistant" | "user";
+    content: string;
+  }>;
+  metrics: {
+    totalDuration: number;
+    userSpeakingTime: number;
+    aiSpeakingTime: number;
+    silenceTime: number;
+    interruptions: number;
+    streakCount: number;
+    correctResponses: number;
+    incorrectResponses: number;
+    levelCompletionTime: number;
+    totalGames: number;
+  };
+  gameMode: {
+    id: string;
+    name: string;
+    type: string;
+    difficulty: string;
+  };
+  createdAt: string;
+}
+
+interface GameMetrics {
+  totalDuration: number;
+  userSpeakingTime: number;
+  aiSpeakingTime: number;
+  silenceTime: number;
+  interruptions: number;
+  streakCount: number;
+  correctResponses: number;
+  incorrectResponses: number;
+  levelCompletionTime: number;
+  totalGames: number;
+}
+
+interface UserGameStats {
+  xp: number;
+  level: number;
+  charisma: number;
+  persuasion: number;
+  confidence: number;
+  achievements: string[];
+  totalGames: number;
+  gamesWon: number;
+  highestStreak: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+interface FirebaseTimestamp {
+  _seconds: number;
+  _nanoseconds: number;
+}
+
+interface FirestoreTimestamp {
+  toDate: () => Date;
+}
+
+interface UserStats {
+  xp: number;
+  level: number;
+  charisma: number;
+  persuasion: number;
+  confidence: number;
+  achievements: string[];
+  totalGames: number;
+  gamesWon: number;
+  highestStreak: number;
+}
+
+interface GameState {
+  timeRemaining: number;
+  streak: number;
+  lives: number;
+  currentLevel: number;
+  metrics: GameMetrics;
+  powerUps: {
+    shield: boolean;
+    doublePoints: boolean;
+    timeFreeze: boolean;
+  };
+  achievements: string[];
+  xp: number;
+  level: number;
+  characterStats: {
+    charisma: number;
+    persuasion: number;
+    confidence: number;
+  };
+  questProgress: {
+    currentQuest: string;
+    objectives: { description: string; completed: boolean }[];
+  };
+}
+
+interface GameAgentProps {
+  userName: string;
+  userId: string;
+  gameMode: GameMode;
+  session: GameSession;
+  initialStats?: {
+    xp: number;
+    level: number;
+    charisma: number;
+    persuasion: number;
+    confidence: number;
+    achievements: string[];
+    totalGames: number;
+    gamesWon: number;
+    highestStreak: number;
+  };
+}

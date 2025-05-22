@@ -21,6 +21,7 @@ import {
   Smartphone,
   Stethoscope,
   Store,
+  Trophy,
 } from "lucide-react";
 import { z } from "zod";
 
@@ -103,6 +104,138 @@ Use the following structure to guide your flow:
 {{questions}} // optional sales flow structure (if provided)
 {{personaInstructions}}
 `,
+      },
+    ],
+    tools: [
+      {
+        type: "endCall",
+      },
+    ],
+  },
+};
+
+interface BaseGameMode {
+  id: string;
+  name: string;
+  description: string;
+  difficulty: "easy" | "medium" | "hard";
+  iconName: "Trophy" | "Flame" | "Timer" | "User" | "Mic";
+}
+
+interface RPGGameMode extends BaseGameMode {
+  type: "rpg";
+  maxLevel: number;
+}
+
+interface StreakGameMode extends BaseGameMode {
+  type: "streak";
+  streakGoal: number;
+}
+
+interface TimeAttackGameMode extends BaseGameMode {
+  type: "timeAttack";
+  timeLimit: number;
+}
+
+interface MysteryGameMode extends BaseGameMode {
+  type: "mystery";
+}
+
+interface VoiceOlympicsGameMode extends BaseGameMode {
+  type: "voiceOlympics";
+}
+
+type GameMode =
+  | RPGGameMode
+  | StreakGameMode
+  | TimeAttackGameMode
+  | MysteryGameMode
+  | VoiceOlympicsGameMode;
+
+export const gameModes: GameMode[] = [
+  {
+    id: "rpg",
+    name: "Sales Quest: The RPG Game",
+    description: "Level up your sales skills through an epic adventure",
+    type: "rpg",
+    difficulty: "medium",
+    maxLevel: 3,
+    iconName: "Trophy",
+  },
+  {
+    id: "streak",
+    name: "Streak Mode",
+    description: "Maintain a perfect response streak to win",
+    type: "streak",
+    difficulty: "hard",
+    streakGoal: 10,
+    iconName: "Flame",
+  },
+  {
+    id: "timeAttack",
+    name: "Time Attack – Speed Selling",
+    description: "Make your pitch under time pressure",
+    type: "timeAttack",
+    difficulty: "medium",
+    timeLimit: 60,
+    iconName: "Timer",
+  },
+  {
+    id: "mystery",
+    name: "Mystery Persona Match",
+    description: "Figure out the customer persona through conversation",
+    type: "mystery",
+    difficulty: "easy",
+    iconName: "User",
+  },
+  {
+    id: "voiceOlympics",
+    name: "Voice Olympics",
+    description: "Master your vocal delivery and presentation",
+    type: "voiceOlympics",
+    difficulty: "medium",
+    iconName: "Mic",
+  },
+];
+
+export const gameAssistant: CreateAssistantDTO = {
+  name: "Sales Game AI",
+  firstMessage:
+    "Welcome to the sales practice game! I'll be your AI coach. Let's begin!",
+  transcriber: {
+    provider: "deepgram",
+    model: "nova-2",
+    language: "en-US",
+  },
+  voice: {
+    provider: "11labs",
+    voiceId: "sarah",
+    stability: 0.4,
+    similarityBoost: 0.8,
+    speed: 0.9,
+    style: 0.5,
+    useSpeakerBoost: true,
+  },
+  model: {
+    provider: "openai",
+    model: "gpt-4",
+    messages: [
+      {
+        role: "system",
+        content: `You are a sales training AI playing the role of a customer in a game mode.
+Your goal is to help the user improve their sales skills through this interactive game.
+
+Game Mode: {{gameMode}}
+Current Level: {{currentLevel}}
+User Name: {{userName}}
+
+Guidelines:
+1. Stay in character based on the game mode
+2. Provide appropriate challenges based on the level
+3. Give clear feedback on performance
+4. Maintain game mechanics (time limits, streak counting, etc.)
+
+{{modeSpecificPrompt}}`,
       },
     ],
     tools: [
@@ -352,7 +485,12 @@ export const navigationData = {
       icon: LayoutDashboard,
     },
     {
-      title: "Sales Jobs",
+      title: "Games",
+      url: "/dashboard/games",
+      icon: Trophy,
+    },
+    {
+      title: "Jobs",
       url: "/dashboard/jobs",
       icon: Briefcase,
     },
