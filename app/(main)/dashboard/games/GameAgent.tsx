@@ -2,13 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import {
   Tooltip,
@@ -16,6 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { ALL_ACHIEVEMENTS } from "@/constants/achievements";
 import { updateUserGameStats } from "@/lib/actions/game-stats.action";
 import { createGameFeedback } from "@/lib/actions/game.action";
 import { calculateScore, getGameConfig } from "@/lib/game-config";
@@ -26,7 +21,6 @@ import {
   Crown,
   Flame,
   Heart,
-  Loader2,
   Medal,
   Mic,
   MicOff,
@@ -123,6 +117,28 @@ const DEFAULT_GAME_STATE: GameState = {
   },
 };
 
+// Helper to check if achievement is unlocked
+function hasAchievement(
+  achievements: { id: string; unlockedAt: string }[],
+  id: string
+) {
+  return achievements.some((a) => a.id === id);
+}
+
+// Helper to unlock achievement
+function unlockAchievement(
+  achievements: { id: string; unlockedAt: string }[],
+  id: string
+) {
+  if (hasAchievement(achievements, id)) return achievements;
+  toast.success(
+    `Achievement Unlocked: ${
+      ALL_ACHIEVEMENTS.find((a) => a.id === id)?.name || id
+    }`
+  );
+  return [...achievements, { id, unlockedAt: new Date().toISOString() }];
+}
+
 export default function GameAgent({
   userName,
   userId,
@@ -154,7 +170,13 @@ export default function GameAgent({
       persuasion: initialStats?.persuasion ?? 1,
       confidence: initialStats?.confidence ?? 1,
     },
-    achievements: initialStats?.achievements ?? [],
+    achievements: Array.isArray(initialStats?.achievements)
+      ? initialStats.achievements.map((a) =>
+          typeof a === "string"
+            ? { id: a, unlockedAt: new Date().toISOString() }
+            : a
+        )
+      : [],
   });
 
   const [callStartTime, setCallStartTime] = useState<number>(0);
@@ -313,11 +335,10 @@ export default function GameAgent({
       const lastMessage = messages[messages.length - 1];
       setLastMessage(lastMessage.content);
 
-      // Update game state without Firebase updates
       setGameState((prev) => {
         let newXP = prev.xp;
         let newLevel = prev.level;
-        const newAchievements = [...prev.achievements];
+        let newAchievements = [...prev.achievements];
         let newCharacterStats = { ...prev.characterStats };
 
         // Award XP for different actions
@@ -325,7 +346,10 @@ export default function GameAgent({
           // Check for perfect response (based on AI feedback)
           if (lastMessage.content.includes("Excellent response")) {
             newXP += XP_REWARDS.PERFECT_RESPONSE;
-            newAchievements.push("Perfect Pitch");
+            newAchievements = unlockAchievement(
+              newAchievements,
+              "perfect_pitch"
+            );
           }
           // Check for objection handling
           else if (lastMessage.content.includes("Objection handled")) {
@@ -348,22 +372,35 @@ export default function GameAgent({
         if (newXP >= nextLevelThreshold) {
           newLevel += 1;
           toast.success(`Level Up! You are now level ${newLevel}`);
-
-          // Award level up bonus
           newXP += XP_REWARDS.LEVEL_COMPLETE;
-
-          // Increase character stats on level up
           newCharacterStats = {
             charisma: Number((newCharacterStats.charisma + 0.2).toFixed(1)),
             persuasion: Number((newCharacterStats.persuasion + 0.2).toFixed(1)),
             confidence: Number((newCharacterStats.confidence + 0.2).toFixed(1)),
           };
+          // Unlock level 5 achievement
+          if (newLevel === 5) {
+            newAchievements = unlockAchievement(newAchievements, "level_5");
+          }
         }
 
         // Check for streak milestones
         if (prev.streak > 0 && prev.streak % 5 === 0) {
           newXP += XP_REWARDS.STREAK_MILESTONE;
           toast.success(`Streak Milestone! +${XP_REWARDS.STREAK_MILESTONE} XP`);
+          // Unlock streak achievement
+          if (prev.streak === 5) {
+            newAchievements = unlockAchievement(newAchievements, "streak_5");
+          }
+        }
+
+        // Example: unlock first win achievement
+        if (
+          prev.metrics.totalGames === 0 &&
+          prev.metrics.correctResponses > 0 &&
+          !hasAchievement(newAchievements, "first_win")
+        ) {
+          newAchievements = unlockAchievement(newAchievements, "first_win");
         }
 
         return {
@@ -462,19 +499,47 @@ export default function GameAgent({
 
   return (
     <div className="flex flex-col justify-center items-center h-full w-full gap-y-4 relative">
-      {/* Loading Dialog */}
+      {/* Motivational AlertDialog for Feedback Generation */}
       <Dialog open={isGeneratingFeedback}>
-        <DialogContent className="bg-gradient-to-br from-slate-800/95 via-slate-900/95 to-slate-800/95 border-2 border-primary/30">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-white flex items-center gap-2">
-              <Loader2 className="size-5 animate-spin text-primary" />
-              Generating Feedback
-            </DialogTitle>
-            <DialogDescription className="text-white/80">
-              Please wait while we analyze your performance and generate
-              detailed feedback...
-            </DialogDescription>
-          </DialogHeader>
+        <DialogContent className="max-w-md bg-gradient-to-br from-violet-900/90 via-indigo-900/90 to-slate-900/90 border-2 border-amber-400/30 shadow-xl flex flex-col items-center">
+          <div className="flex flex-col items-center gap-3 py-2">
+            <Sparkles className="size-10 text-amber-400 animate-bounce" />
+            <h2 className="text-2xl font-bold text-white text-center">
+              Great work!
+            </h2>
+            <p className="text-white/80 text-center text-base max-w-xs">
+              We&apos;re generating your personalized feedback. This may take a
+              few moments.
+            </p>
+            <button
+              disabled
+              className="mt-4 flex items-center gap-2 px-6 py-2 rounded-lg bg-gradient-to-r from-amber-500 to-violet-500 text-white font-semibold text-lg opacity-80 cursor-not-allowed shadow-lg"
+            >
+              <span>
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  ></path>
+                </svg>
+              </span>
+              Generating Feedback…
+            </button>
+          </div>
         </DialogContent>
       </Dialog>
 

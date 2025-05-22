@@ -25,7 +25,7 @@ export default function RootLayout({
       <body className={`${monaSans.className} antialiased pattern`}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >

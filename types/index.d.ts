@@ -273,7 +273,7 @@ interface UserGameStats {
   charisma: number;
   persuasion: number;
   confidence: number;
-  achievements: string[];
+  achievements: { id: string; unlockedAt: string }[];
   totalGames: number;
   gamesWon: number;
   highestStreak: number;
@@ -296,7 +296,7 @@ interface UserStats {
   charisma: number;
   persuasion: number;
   confidence: number;
-  achievements: string[];
+  achievements: { id: string; unlockedAt: string }[];
   totalGames: number;
   gamesWon: number;
   highestStreak: number;
@@ -313,7 +313,7 @@ interface GameState {
     doublePoints: boolean;
     timeFreeze: boolean;
   };
-  achievements: string[];
+  achievements: { id: string; unlockedAt: string }[];
   xp: number;
   level: number;
   characterStats: {
@@ -338,9 +338,24 @@ interface GameAgentProps {
     charisma: number;
     persuasion: number;
     confidence: number;
-    achievements: string[];
+    achievements: { id: string; unlockedAt: string }[];
     totalGames: number;
     gamesWon: number;
     highestStreak: number;
   };
+}
+
+// Social/Friends
+interface FriendRequest {
+  id: string;
+  fromUserId: string;
+  toUserId: string;
+  status: "pending" | "accepted" | "declined";
+  createdAt: string;
+}
+
+interface Friend {
+  userId: string;
+  friendId: string;
+  createdAt: string;
 }

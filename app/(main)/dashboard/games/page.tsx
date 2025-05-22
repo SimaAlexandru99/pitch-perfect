@@ -29,7 +29,7 @@ export default async function GamesPage() {
   await initializeGameModes();
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-slate-900">
+    <div className="w-full min-h-screen">
       {/* Decorative Elements */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none">
         <div className="absolute top-0 left-0 w-[50vw] h-[50vh] bg-violet-500/10 rounded-full blur-3xl" />

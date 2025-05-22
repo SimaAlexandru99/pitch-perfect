@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@/firebase/admin";
+import { updateOnboardingStep } from "@/lib/actions/auth.action";
 
 type TimestampType =
   | FirebaseTimestamp
@@ -193,6 +194,10 @@ export async function addUserAchievement(userId: string, achievement: string) {
       scheduleUpdate(userId, {
         achievements: [...achievements, achievement],
       });
+      // Mark onboarding step complete
+      try {
+        await updateOnboardingStep(userId, "firstAchievement", true);
+      } catch {}
     }
 
     return { success: true };

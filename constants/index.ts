@@ -1,5 +1,7 @@
 import { createSalesPrompt } from "@/lib/prompt-templates";
 import {
+  Award,
+  Book,
   Briefcase,
   Building2,
   Camera,
@@ -19,9 +21,11 @@ import {
   ShieldCheck,
   ShoppingCart,
   Smartphone,
+  Star,
   Stethoscope,
   Store,
   Trophy,
+  Users,
 } from "lucide-react";
 import { z } from "zod";
 
@@ -494,6 +498,16 @@ export const navigationData = {
       url: "/dashboard/jobs",
       icon: Briefcase,
     },
+    {
+      title: "Leaderboard",
+      url: "/dashboard/leaderboard",
+      icon: Star,
+    },
+    {
+      title: "Achievements",
+      url: "/dashboard/achievements",
+      icon: Award,
+    },
   ],
   navClouds: [
     {
@@ -545,6 +559,11 @@ export const navigationData = {
   ],
   navSecondary: [
     {
+      title: "Friends",
+      url: "/dashboard/friends",
+      icon: Users,
+    },
+    {
       title: "Settings",
       url: "/settings",
       icon: Settings,
@@ -565,6 +584,16 @@ export const navigationData = {
       name: "Domains",
       url: "/dashboard/domains",
       icon: Layers,
+    },
+    {
+      name: "Scripts",
+      url: "/dashboard/scripts",
+      icon: FileText,
+    },
+    {
+      name: "Resources",
+      url: "/dashboard/resources",
+      icon: Book,
     },
   ],
 };

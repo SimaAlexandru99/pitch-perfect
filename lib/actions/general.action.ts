@@ -624,3 +624,24 @@ export async function deleteFeedbackByJobIdUserId(
     return { success: false };
   }
 }
+
+/**
+ * Fetches all interview feedback for a specific user, ordered by createdAt descending.
+ */
+export async function getAllInterviewFeedbackByUser(
+  userId: string
+): Promise<Feedback[]> {
+  try {
+    const snapshot = await db
+      .collection("feedback")
+      .where("userId", "==", userId)
+      .orderBy("createdAt", "desc")
+      .get();
+    return snapshot.docs.map(
+      (doc) => ({ id: doc.id, ...doc.data() } as Feedback)
+    );
+  } catch (error) {
+    console.error("Error fetching all interview feedback by user:", error);
+    return [];
+  }
+}

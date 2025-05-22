@@ -2,6 +2,7 @@
 
 import { gameModes } from "@/constants";
 import { db } from "@/firebase/admin";
+import { updateOnboardingStep } from "@/lib/actions/auth.action";
 import { google } from "@ai-sdk/google";
 import { generateObject } from "ai";
 import { DocumentData } from "firebase-admin/firestore";
@@ -91,6 +92,10 @@ export async function createGameSession({
     };
 
     await sessionRef.set(session);
+    // Mark onboarding step complete
+    try {
+      await updateOnboardingStep(userId, "firstGame", true);
+    } catch {}
     return { success: true, session };
   } catch (error) {
     console.error("Error creating game session:", error);
@@ -136,7 +141,7 @@ export async function getGameFeedback(sessionId: string) {
   }
 }
 
-interface LeaderboardEntry {
+export interface LeaderboardEntry {
   userId: string;
   userName: string;
   score: number;
@@ -504,5 +509,24 @@ export async function getGameMode(modeId: string) {
   } catch (error) {
     console.error("Error fetching game mode:", error);
     return { success: false, error: "Failed to fetch game mode" };
+  }
+}
+
+/**
+ * Fetches all game feedback for a specific user, ordered by createdAt descending.
+ */
+export async function getAllGameFeedbackByUser(
+  userId: string
+): Promise<GameFeedback[]> {
+  try {
+    const snapshot = await db
+      .collection("gameFeedback")
+      .where("userId", "==", userId)
+      .orderBy("createdAt", "desc")
+      .get();
+    return snapshot.docs.map((doc) => doc.data() as GameFeedback);
+  } catch (error) {
+    console.error("Error fetching all game feedback by user:", error);
+    return [];
   }
 }

@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { ArrowLeft, Download, Trophy } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 interface BadgeInfo {
@@ -46,8 +46,6 @@ interface HeaderBarProps {
 }
 
 const PracticeAgainDialog = ({
-  jobId,
-  userId,
   isPending,
   onPracticeAgain,
 }: {
@@ -89,9 +87,7 @@ export default function HeaderBar({
   children,
 }: HeaderBarProps) {
   const router = useRouter();
-  const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
-  const isGamesPage = pathname?.includes("/games");
 
   const handlePracticeAgain = async () => {
     if (!actions.jobId || !actions.userId) return;
@@ -110,10 +106,7 @@ export default function HeaderBar({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       className={cn(
-        "sticky top-0 z-30 border-b backdrop-blur supports-[backdrop-filter]",
-        isGamesPage
-          ? "bg-gradient-to-r from-slate-800/95 via-slate-900/95 to-slate-800/95 border-primary/30"
-          : "bg-background/95 supports-[backdrop-filter]:bg-background/60"
+        "sticky top-0 z-30 border-b backdrop-blur supports-[backdrop-filter] bg-background/95 supports-[backdrop-filter]:bg-background/60"
       )}
     >
       <div className="flex h-14 items-center px-3 sm:px-4">
@@ -124,9 +117,7 @@ export default function HeaderBar({
             size="icon"
             className={cn(
               "mr-2 sm:mr-4",
-              isGamesPage
-                ? "text-white/75 hover:text-white hover:bg-slate-800/50"
-                : "text-muted-foreground hover:text-foreground"
+              "text-muted-foreground hover:text-foreground"
             )}
           >
             <Link href={navigation.backHref}>
@@ -138,23 +129,11 @@ export default function HeaderBar({
 
         <div className="flex flex-1 items-center gap-2 sm:gap-4 overflow-x-auto pb-3 pt-3 scrollbar-none">
           <div className="flex flex-col">
-            <h1
-              className={cn(
-                "text-base sm:text-lg font-semibold whitespace-nowrap",
-                isGamesPage ? "text-white" : ""
-              )}
-            >
+            <h1 className="text-base sm:text-lg font-semibold whitespace-nowrap">
               {title}
             </h1>
             {description && (
-              <p
-                className={cn(
-                  "text-sm",
-                  isGamesPage ? "text-white/75" : "text-muted-foreground"
-                )}
-              >
-                {description}
-              </p>
+              <p className="text-sm text-muted-foreground">{description}</p>
             )}
           </div>
           {badges.length > 0 && (
@@ -163,10 +142,7 @@ export default function HeaderBar({
                 <Badge
                   key={index}
                   variant="outline"
-                  className={cn(
-                    "gap-1 pl-2 whitespace-nowrap text-xs",
-                    isGamesPage && "border-primary/30 text-white/90"
-                  )}
+                  className="gap-1 pl-2 whitespace-nowrap text-xs"
                 >
                   <badge.icon className="h-3 w-3" />
                   {badge.label}
@@ -186,44 +162,22 @@ export default function HeaderBar({
               onPracticeAgain={() => startTransition(handlePracticeAgain)}
             />
           )}
-          <Button
-            asChild
-            variant={isGamesPage ? "default" : "outline"}
-            size="sm"
-            className={cn(
-              "gap-2",
-              isGamesPage &&
-                "bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white border-none"
-            )}
-          >
+          <Button asChild variant="outline" size="sm" className="gap-2">
             <Link href="/dashboard/games">
               <Trophy className="h-4 w-4" />
               Games
             </Link>
           </Button>
           {actions.showBrowseJobs && (
-            <Button
-              asChild
-              variant={isGamesPage ? "outline" : "outline"}
-              className={
-                isGamesPage
-                  ? "border-primary/30 text-white/90 hover:bg-slate-800/50"
-                  : ""
-              }
-              size="sm"
-            >
+            <Button asChild variant="outline" className="" size="sm">
               <Link href="/dashboard/jobs">Browse More Jobs</Link>
             </Button>
           )}
           {actions.showExport && !children && (
             <Button
-              variant={isGamesPage ? "outline" : "outline"}
+              variant="outline"
               size="sm"
-              className={cn(
-                "gap-2",
-                isGamesPage &&
-                  "border-primary/30 text-white/90 hover:bg-slate-800/50"
-              )}
+              className="gap-2"
               onClick={actions.onExport}
             >
               <Download className="h-4 w-4" />
