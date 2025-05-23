@@ -1,5 +1,6 @@
 "use client";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -139,12 +140,20 @@ function unlockAchievement(
   return [...achievements, { id, unlockedAt: new Date().toISOString() }];
 }
 
+function getInitials(name?: string) {
+  if (!name) return "?";
+  const parts = name.trim().split(" ");
+  if (parts.length === 1) return parts[0][0]?.toUpperCase() || "?";
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
 export default function GameAgent({
   userName,
   userId,
   gameMode,
   session,
   initialStats,
+  userAvatar,
 }: GameAgentProps) {
   const router = useRouter();
   const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
@@ -806,15 +815,16 @@ export default function GameAgent({
         {/* User Profile Card */}
         <div className="h-[350px] sm:h-[450px] w-full max-w-[700px] mx-auto flex flex-col items-center justify-center p-4 sm:p-8 bg-gradient-to-br from-slate-800/80 via-slate-900/80 to-slate-800/80 rounded-xl border-2 border-primary/30 shadow-lg transition-all duration-300 hover:border-primary/50">
           <div className="relative">
-            <div className="size-28 sm:size-36 rounded-full overflow-hidden transition-transform duration-300 hover:scale-105 border-2 border-primary/30">
-              <Image
-                src="/user-avatar.png"
-                alt="User Avatar"
-                width={144}
-                height={144}
-                className="object-cover w-full h-full"
-                priority
-              />
+            <div className="size-28 sm:size-36 rounded-full overflow-hidden transition-transform duration-300 hover:scale-105 border-2 border-primary/30 flex items-center justify-center">
+              <Avatar className="w-full h-full">
+                <AvatarImage
+                  src={
+                    typeof userAvatar !== "undefined" ? userAvatar : undefined
+                  }
+                  alt={userName || "Avatar"}
+                />
+                <AvatarFallback>{getInitials(userName)}</AvatarFallback>
+              </Avatar>
             </div>
             <div className="absolute -top-2 -right-2">
               <Crown className="size-6 sm:size-7 text-amber-400" />

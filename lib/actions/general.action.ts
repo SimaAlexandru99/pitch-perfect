@@ -45,6 +45,15 @@ const feedbackSchema = z.object({
   }),
 });
 
+/**
+ * Schema for daily pitch challenge completion
+ */
+const dailyPitchSchema = z.object({
+  userId: z.string(),
+  completedAt: z.string(),
+  score: z.number().optional(),
+});
+
 export async function createFeedback(params: CreateFeedbackParams) {
   const { jobId, userId, transcript, feedbackId, metrics } = params;
 
@@ -643,5 +652,58 @@ export async function getAllInterviewFeedbackByUser(
   } catch (error) {
     console.error("Error fetching all interview feedback by user:", error);
     return [];
+  }
+}
+
+/**
+ * Check if user has completed today's pitch challenge
+ */
+export async function getDailyPitchStatus(userId: string): Promise<boolean> {
+  try {
+    // Get the current date in YYYY-MM-DD format
+    const today = new Date().toISOString().split("T")[0];
+
+    const dailyPitchRef = db
+      .collection("dailyPitchChallenges")
+      .doc(today)
+      .collection("completions")
+      .doc(userId);
+
+    const doc = await dailyPitchRef.get();
+    return doc.exists;
+  } catch (error) {
+    console.error("Error checking daily pitch status:", error);
+    return false;
+  }
+}
+
+/**
+ * Mark daily pitch challenge as completed
+ */
+export async function completeDailyPitch(params: {
+  userId: string;
+  score?: number;
+}): Promise<{ success: boolean }> {
+  try {
+    const { userId, score } = params;
+    const today = new Date().toISOString().split("T")[0];
+
+    const completion = dailyPitchSchema.parse({
+      userId,
+      completedAt: new Date().toISOString(),
+      score,
+    });
+
+    await db
+      .collection("dailyPitchChallenges")
+      .doc(today)
+      .collection("completions")
+      .doc(userId)
+      .set(completion);
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error completing daily pitch:", error);
+    return { success: false };
   }
 }

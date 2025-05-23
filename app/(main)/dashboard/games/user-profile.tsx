@@ -1,10 +1,10 @@
 "use client";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { getUserGameStats } from "@/lib/actions/game-stats.action";
 import { Crown, Sparkles, Star, Sword } from "lucide-react";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 
 interface UserProfileProps {
@@ -12,6 +12,7 @@ interface UserProfileProps {
     id: string;
     name: string | null;
     email: string;
+    avatar?: string;
   };
 }
 
@@ -39,6 +40,13 @@ const XP_THRESHOLDS = [
   16000, // Level 9
   32000, // Level 10
 ] as const;
+
+function getInitials(name?: string) {
+  if (!name) return "?";
+  const parts = name.trim().split(" ");
+  if (parts.length === 1) return parts[0][0]?.toUpperCase() || "?";
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
 
 export function UserProfile({ user }: UserProfileProps) {
   const [stats, setStats] = useState<UserStats>({
@@ -102,20 +110,10 @@ export function UserProfile({ user }: UserProfileProps) {
       <div className="flex flex-col md:flex-row gap-6">
         {/* User Avatar and Basic Info */}
         <div className="flex items-center gap-4">
-          <div className="relative">
-            <div className="size-20 rounded-full overflow-hidden border-2 border-primary/30">
-              <Image
-                src="/user-avatar.png"
-                alt={user.name || "User Avatar"}
-                width={80}
-                height={80}
-                className="object-cover"
-              />
-            </div>
-            <div className="absolute -top-2 -right-2">
-              <Crown className="size-6 text-amber-400" />
-            </div>
-          </div>
+          <Avatar className="w-14 h-14 border-2 border-primary shadow">
+            <AvatarImage src={user.avatar} alt={user.name || "Avatar"} />
+            <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+          </Avatar>
           <div>
             <h2 className="text-xl font-semibold text-white">
               {user.name || "Adventurer"}

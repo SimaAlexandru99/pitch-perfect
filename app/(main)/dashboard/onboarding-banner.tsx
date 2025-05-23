@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import {
   Tooltip,
@@ -88,13 +89,13 @@ export default function OnboardingBanner() {
 
   if (!user || loading || !steps || completed === total || dismissed)
     return loading ? (
-      <div className="w-full bg-gradient-to-r from-violet-900/80 to-indigo-900/80 border-b border-violet-700 shadow-lg px-4 py-3 flex items-center justify-center z-30">
+      <div className="w-full flex items-center justify-center py-4">
         <Loader2 className="animate-spin size-6 text-white/80" />
       </div>
     ) : null;
 
   return (
-    <div className="w-full bg-gradient-to-r from-violet-900/80 to-indigo-900/80 border-b border-violet-700 shadow-lg px-4 py-3 flex flex-col md:flex-row items-center gap-4 relative z-30">
+    <Card className="w-full bg-gradient-to-r from-violet-900/80 to-indigo-900/80 border border-violet-700 shadow-lg rounded-xl p-4 md:p-6 flex flex-col md:flex-row items-center gap-4 relative z-30">
       {celebrated && (
         <Confetti
           width={windowSize.width}
@@ -153,6 +154,6 @@ export default function OnboardingBanner() {
           ))}
         </div>
       </div>
-    </div>
+    </Card>
   );
 }

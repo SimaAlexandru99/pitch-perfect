@@ -15,9 +15,23 @@ import { Textarea } from "@/components/ui/textarea";
 import { createScript } from "@/lib/actions/scripts.action";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { FileText, Loader2, Plus, Tag } from "lucide-react";
+import dynamic from "next/dynamic";
 import { useState } from "react";
-import Markdown from "react-markdown";
 import { toast } from "sonner";
+import { z } from "zod";
+
+// Zod schema for script form
+const scriptSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  content: z
+    .string()
+    .min(1, "Content is required")
+    .max(2000, "Content exceeds 2000 characters."),
+  tags: z.array(z.string()),
+});
+
+// Dynamic import for react-markdown
+const Markdown = dynamic(() => import("react-markdown"), { ssr: false });
 
 export default function AddScriptDialog() {
   const { user } = useAuth();
@@ -57,19 +71,19 @@ export default function AddScriptDialog() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErrors({});
-    if (!form.title.trim()) {
-      setErrors((err) => ({ ...err, title: "Title is required" }));
-      return;
-    }
-    if (!form.content.trim()) {
-      setErrors((err) => ({ ...err, content: "Content is required" }));
-      return;
-    }
-    if (contentOver) {
-      setErrors((err) => ({
-        ...err,
-        content: `Content exceeds ${contentMax} characters.`,
-      }));
+    // Zod validation
+    const result = scriptSchema.safeParse({
+      title: form.title,
+      content: form.content,
+      tags,
+    });
+    if (!result.success) {
+      const fieldErrors: { title?: string; content?: string } = {};
+      for (const err of result.error.errors) {
+        if (err.path[0] === "title") fieldErrors.title = err.message;
+        if (err.path[0] === "content") fieldErrors.content = err.message;
+      }
+      setErrors(fieldErrors);
       return;
     }
     if (!user) {

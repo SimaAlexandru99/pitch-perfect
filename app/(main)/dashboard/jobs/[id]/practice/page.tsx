@@ -1,7 +1,9 @@
 import Agent from "@/app/(main)/dashboard/jobs/[id]/practice/Agent";
 import HeaderBar from "@/components/HeaderBar";
+import { interviewer } from "@/constants";
 import { getCurrentUser } from "@/lib/actions/auth.action";
 import { getFeedbackByJobId, getJobById } from "@/lib/actions/general.action";
+import { Trophy } from "lucide-react";
 import { redirect } from "next/navigation";
 
 interface RouteParams {
@@ -28,9 +30,13 @@ const PracticeDetails = async ({ params }: RouteParams) => {
     <div className="flex flex-col h-dvh overflow-hidden bg-muted/40 w-full">
       <HeaderBar
         title="Practice Interview"
-        domain={job.domain}
-        jobTitle={job.title}
-        level={job.level}
+        description={`${job.domain} - ${job.title}`}
+        badges={[
+          {
+            icon: Trophy,
+            label: job.level,
+          },
+        ]}
       />
       {/* Meeting Space */}
       <div className="flex-1 p-2 sm:p-6 flex items-center justify-center min-h-0">
@@ -45,6 +51,7 @@ const PracticeDetails = async ({ params }: RouteParams) => {
               jobDomain={job.domain}
               jobLevel={job.level}
               feedbackId={feedback?.id}
+              config={interviewer}
             />
           </div>
           {/* Script Panel is handled inside Agent */}

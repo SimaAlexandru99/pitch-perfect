@@ -20,7 +20,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { interviewer } from "@/constants";
 import { Persona, personas } from "@/constants/personas";
 import {
   createFeedback,
@@ -31,6 +30,7 @@ import { cn } from "@/lib/utils";
 import { vapi } from "@/lib/vapi.sdk";
 import { ScriptPanel } from "./ScriptPanel";
 import { ScriptSkeleton } from "./ScriptSkeleton";
+import { CreateAssistantDTO } from "@vapi-ai/web/dist/api";
 
 enum CallStatus {
   INACTIVE = "INACTIVE",
@@ -54,6 +54,19 @@ interface Script {
   closingStatement: string;
 }
 
+interface AgentProps {
+  userName: string;
+  userId: string;
+  jobId: string;
+  feedbackId?: string;
+  type: string;
+  jobTitle: string;
+  jobDomain: string;
+  jobLevel: string;
+  config: CreateAssistantDTO;
+  onProgress?: (completed: number) => void;
+}
+
 const Agent = ({
   userName,
   userId,
@@ -63,6 +76,8 @@ const Agent = ({
   jobTitle,
   jobDomain,
   jobLevel,
+  config,
+  onProgress,
 }: AgentProps) => {
   const router = useRouter();
   const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
@@ -168,7 +183,6 @@ const Agent = ({
           totalDuration - prev.userSpeakingTime - prev.aiSpeakingTime,
       }));
     };
-
     const onMessage = (message: Message) => {
       if (message.type !== "transcript") return;
       if (message.transcriptType === "partial") {
@@ -176,7 +190,21 @@ const Agent = ({
       }
       if (message.transcriptType === "final") {
         const newMessage = { role: message.role, content: message.transcript };
-        setMessages((prev) => [...prev, newMessage]);
+        setMessages((prev) => {
+          const newMessages = [...prev, newMessage];
+          if (type === "daily-pitch") {
+            // Count completed objections based on AI responses
+            const assistantMessages = newMessages.filter(
+              (m) => m.role === "assistant"
+            );
+            if (assistantMessages.length > 1) {
+              // First message is intro
+              const completed = Math.min(assistantMessages.length - 1, 3);
+              onProgress?.(completed);
+            }
+          }
+          return newMessages;
+        });
         setPartialTranscript(null);
       }
     };
@@ -203,7 +231,6 @@ const Agent = ({
     vapi.on("speech-end", onSpeechEnd);
     vapi.on("error", onError);
     vapi.on("volume-level", handleVolume);
-
     return () => {
       vapi.off("call-start", onCallStart);
       vapi.off("call-end", onCallEnd);
@@ -213,7 +240,7 @@ const Agent = ({
       vapi.off("error", onError);
       vapi.off("volume-level", handleVolume);
     };
-  }, [callStartTime, lastSpeakingStart]);
+  }, [callStartTime, lastSpeakingStart, onProgress, type]);
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -244,11 +271,10 @@ const Agent = ({
       }
     }
   }, [messages, callStatus, feedbackId, jobId, router, type, userId, metrics]);
-
   // Helper to get interviewer config with or without coach mode
   const getInterviewerConfig = () => {
-    if (!isCoachMode) return interviewer;
-    const coachInterviewer = structuredClone(interviewer);
+    if (!isCoachMode) return config;
+    const coachInterviewer = structuredClone(config);
     const systemMsg = coachInterviewer.model?.messages?.[0];
     if (systemMsg) {
       systemMsg.content += `\n---\nCOACH MODE:\nAt the end of the conversation, or if the agent requests feedback by saying something like \"Can I get feedback?\", provide a brief, constructive summary of the agent's performance, including strengths and areas for improvement. Speak as a coach, not as a customer.`;

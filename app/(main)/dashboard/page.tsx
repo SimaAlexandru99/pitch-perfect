@@ -8,10 +8,22 @@ import { getCurrentUser } from "@/lib/actions/auth.action";
 import { getAllGameFeedbackByUser } from "@/lib/actions/game.action";
 import {
   getAllInterviewFeedbackByUser,
+  getDailyPitchStatus,
   getJobs,
 } from "@/lib/actions/general.action";
 import { redirect } from "next/navigation";
 import OnboardingBannerWrapper from "./onboarding-banner-wrapper";
+import ProfileStatsCard from "./profile-stats-card";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 export default async function Page() {
   const user = await getCurrentUser();
@@ -90,9 +102,89 @@ export default async function Page() {
       };
     });
 
+  // Check if user has completed today's pitch challenge
+  const hasDailyPitch = await getDailyPitchStatus(user.id);
+
+  // Calculate stats
+  const streak = gameFeedback.length > 0 ? 3 : 0;
+  const globalRank = 42;
+  const topDomains = jobs && jobs.length > 0 ? [jobs[0].domain] : [];
+
   return (
     <div className="flex flex-1 flex-col">
-      <OnboardingBannerWrapper />
+      <div className="px-4 pt-4">
+        <ProfileStatsCard
+          user={user}
+          streak={streak}
+          globalRank={globalRank}
+          topDomains={topDomains}
+        />
+      </div>
+      <div className="px-4 pt-4">
+        <OnboardingBannerWrapper />
+      </div>
+
+      {/* Daily Pitch Challenge Card - Prominent placement */}
+      <div className="px-4 pt-4">
+        <Card
+          className={cn(
+            "bg-gradient-to-br border transition-all duration-300",
+            hasDailyPitch
+              ? "from-green-50 to-background border-green-100"
+              : "from-primary-50 to-background border-primary-100"
+          )}
+        >
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              Daily Pitch Challenge
+              {hasDailyPitch ? (
+                <span className="inline-block px-2 py-1 text-xs rounded-full bg-green-500/10 text-green-600">
+                  Completed
+                </span>
+              ) : (
+                <span className="inline-block px-2 py-1 text-xs rounded-full bg-primary/10 text-primary">
+                  New Today
+                </span>
+              )}
+            </CardTitle>
+            <CardDescription>
+              Practice handling 3 sales objections
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">
+                  {hasDailyPitch
+                    ? "Great job completing today's challenge!"
+                    : "Practice your objection handling skills"}
+                </p>
+                <p
+                  className={cn(
+                    "text-xs",
+                    hasDailyPitch ? "text-green-600" : "text-primary"
+                  )}
+                >
+                  {hasDailyPitch
+                    ? "Come back tomorrow for a new challenge"
+                    : "Complete today's challenge to maintain your streak!"}
+                </p>
+              </div>
+              {!hasDailyPitch && (
+                <Link href="/dashboard/pitch-of-the-day">
+                  <Button
+                    size="lg"
+                    className="shadow-lg hover:shadow-xl transition-all"
+                  >
+                    Start Challenge
+                  </Button>
+                </Link>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       <div className="@container/main flex flex-1 flex-col gap-2">
         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
           <SectionCards gameStats={gameStats} interviewStats={interviewStats} />
@@ -103,6 +195,7 @@ export default async function Page() {
             <InterviewDataTable data={interviewTableData} />
           </div>
         </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"></div>
       </div>
     </div>
   );

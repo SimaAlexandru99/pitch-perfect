@@ -255,6 +255,12 @@ export const domains = [
     value: "telecom",
     label: "Mobile plan sales, internet packages (e.g. Vodafone, AT&T)",
     icon: Smartphone,
+    objections: [
+      "Price concerns (always reference EUR pricing)",
+      "Contract duration (emphasize flexibility of 6/12/24 month options)",
+      "Network coverage",
+      "Current provider loyalty",
+    ],
     prompt: createSalesPrompt({
       industry: "telecom",
       intro:
@@ -274,6 +280,12 @@ export const domains = [
     value: "banking",
     label: "Credit cards, savings accounts, loan offers (e.g. ING, Chase)",
     icon: CreditCard,
+    objections: [
+      "Credit score concerns",
+      "Existing banking relationships",
+      "Fee structure (always reference EUR)",
+      "Application process",
+    ],
     prompt: createSalesPrompt({
       industry: "banking",
       intro:
@@ -293,6 +305,12 @@ export const domains = [
     value: "energy",
     label: "Gas/electricity provider switch (e.g. EnergyCo, E.ON)",
     icon: Plug,
+    objections: [
+      "Current contract terms",
+      "Price stability concerns (reference EUR pricing)",
+      "Switching process",
+      "Service reliability",
+    ],
     prompt: createSalesPrompt({
       industry: "energy",
       intro:
@@ -312,6 +330,12 @@ export const domains = [
     value: "insurance",
     label: "Health, auto, or life insurance products",
     icon: ShieldCheck,
+    objections: [
+      "Premium costs (reference EUR pricing)",
+      "Existing coverage",
+      "Claims history",
+      "Policy complexity",
+    ],
     prompt: createSalesPrompt({
       industry: "insurance",
       intro:
@@ -331,6 +355,12 @@ export const domains = [
     value: "ecommerce",
     label: "Upsells for online stores or abandoned cart follow-ups",
     icon: ShoppingCart,
+    objections: [
+      "Price concerns (reference EUR pricing)",
+      "Product quality",
+      "Shipping time",
+      "Return policy",
+    ],
     prompt: createSalesPrompt({
       industry: "ecommerce",
       intro:
@@ -350,6 +380,12 @@ export const domains = [
     value: "education",
     label: "Online course sales, training programs, language learning",
     icon: GraduationCap,
+    objections: [
+      "Time commitment",
+      "Cost concerns (reference EUR pricing)",
+      "Prerequisites",
+      "Career relevance",
+    ],
     prompt: createSalesPrompt({
       industry: "education",
       intro:
@@ -369,6 +405,12 @@ export const domains = [
     value: "software",
     label: "SaaS product demos or B2B lead qualification (e.g. CRM tools)",
     icon: Cloud,
+    objections: [
+      "Implementation time",
+      "Cost concerns (reference EUR pricing)",
+      "Technical requirements",
+      "Existing solutions",
+    ],
     prompt: createSalesPrompt({
       industry: "software",
       intro:
@@ -388,6 +430,12 @@ export const domains = [
     value: "real_estate",
     label: "Lead generation or appointment setting for listings",
     icon: Building2,
+    objections: [
+      "Price concerns (reference EUR pricing)",
+      "Location preferences",
+      "Timing issues",
+      "Financing options",
+    ],
     prompt: createSalesPrompt({
       industry: "real_estate",
       intro:
@@ -407,6 +455,12 @@ export const domains = [
     value: "healthcare",
     label: "Private clinics, wellness programs, medical plans",
     icon: Stethoscope,
+    objections: [
+      "Cost concerns (reference EUR pricing)",
+      "Insurance coverage",
+      "Treatment effectiveness",
+      "Location convenience",
+    ],
     prompt: createSalesPrompt({
       industry: "healthcare",
       intro:
@@ -426,6 +480,12 @@ export const domains = [
     value: "automotive",
     label: "Car financing, service plan renewals, test drive offers",
     icon: Car,
+    objections: [
+      "Price concerns (reference EUR pricing)",
+      "Vehicle features",
+      "Financing terms",
+      "Trade-in value",
+    ],
     prompt: createSalesPrompt({
       industry: "automotive",
       intro:
@@ -445,6 +505,12 @@ export const domains = [
     value: "subscriptions",
     label: "Media, fitness, or digital product subscriptions",
     icon: Newspaper,
+    objections: [
+      "Price concerns (reference EUR pricing)",
+      "Content value",
+      "Commitment length",
+      "Cancellation policy",
+    ],
     prompt: createSalesPrompt({
       industry: "subscriptions",
       intro:
@@ -464,6 +530,12 @@ export const domains = [
     value: "retail",
     label: "Loyalty programs, in-store promos, new product campaigns",
     icon: Store,
+    objections: [
+      "Price concerns (reference EUR pricing)",
+      "Product quality",
+      "Availability",
+      "Return policy",
+    ],
     prompt: createSalesPrompt({
       industry: "retail",
       intro:
@@ -631,3 +703,80 @@ export const feedbackSchema = z.object({
   areasForImprovement: z.array(z.string()),
   finalAssessment: z.string(),
 });
+
+export const dailyPitchInterviewer: CreateAssistantDTO = {
+  name: "Daily Pitch Challenge",
+  firstMessage:
+    "Hello! I'm your daily pitch challenge assessor. Today, we'll practice handling 3 common sales objections. Are you ready to begin?",
+  transcriber: {
+    provider: "deepgram",
+    model: "nova-2",
+    language: "en",
+  },
+  voice: {
+    provider: "11labs",
+    voiceId: "sarah",
+    stability: 0.4,
+    similarityBoost: 0.8,
+    speed: 0.9,
+    style: 0.5,
+    useSpeakerBoost: true,
+  },
+  model: {
+    provider: "openai",
+    model: "gpt-4",
+    messages: [
+      {
+        role: "system",
+        content: `You are a sales training assistant conducting a daily pitch challenge.
+Your role is to present 3 different sales objections and evaluate how the user handles them.
+
+Guidelines:
+1. Present one objection at a time
+2. Listen to the user's response
+3. Provide brief feedback after each response
+4. Move to the next objection
+
+Objection Types to Use (randomly select 3):
+- Price/Budget: "That's too expensive for us right now"
+- Need: "We don't really need this"
+- Competition: "We're already working with someone else"
+- Time: "This isn't the right time"
+- Authority: "I need to discuss this with my team"
+- Understanding: "I don't see how this would help us"
+- Status Quo: "Our current solution works fine"
+
+Structure:
+1. Introduce the challenge
+2. Present first objection
+3. Listen and provide feedback
+4. Present second objection
+5. Listen and provide feedback
+6. Present final objection
+7. Listen and provide feedback
+8. Provide overall summary
+
+Keep the interaction focused and professional. Provide constructive feedback that helps the user improve their objection handling skills.`,
+      },
+    ],
+    tools: [
+      {
+        type: "endCall",
+      },
+    ],
+  },
+};
+
+// Daily challenge tracking interface
+export interface DailyPitchProgress {
+  date: string;
+  completed: boolean;
+  objectionsHandled: number;
+  averageScore: number;
+  feedback: {
+    objection: string;
+    response: string;
+    feedback: string;
+    score: number;
+  }[];
+}

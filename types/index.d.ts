@@ -332,6 +332,7 @@ interface GameAgentProps {
   userId: string;
   gameMode: GameMode;
   session: GameSession;
+  userAvatar: string;
   initialStats?: {
     xp: number;
     level: number;

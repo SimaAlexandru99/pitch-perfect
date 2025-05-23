@@ -39,9 +39,6 @@ export async function generateMetadata({
     };
   }
 
-  const domainMeta = domains.find((d) => d.value === job.domain);
-  const DomainIcon = domainMeta?.icon;
-
   return {
     title: `${job.title} - Sales Job Details`,
     description: `Practice interview for ${job.title} position in ${job.domain} at ${job.level} level.`,
@@ -59,17 +56,13 @@ export default async function JobDetailsPage({ params }: JobDetailsPageProps) {
 
   if (!job) return notFound();
 
-  const domainMeta = domains.find((d) => d.value === job.domain);
-  const DomainIcon = domainMeta?.icon;
+  const domainMeta = domains.find(
+    (d: { value: string }) => d.value === job.domain
+  );
 
   return (
     <main className="flex flex-col flex-1 overflow-hidden">
-      <HeaderBar
-        title="Job Details"
-        domain={job.domain}
-        jobTitle={job.title}
-        level={job.level}
-      />
+      <HeaderBar title="Job Details" />
 
       <div className="flex-1 p-3 sm:p-6">
         <div className="mx-auto max-w-[1500px] h-full">
@@ -79,11 +72,11 @@ export default async function JobDetailsPage({ params }: JobDetailsPageProps) {
               <Card className="w-full p-6 lg:p-8 flex flex-col gap-6 shadow-lg border border-border rounded-2xl bg-card relative">
                 {/* Domain Icon */}
                 <div className="flex justify-center -mt-16 mb-2">
-                  {DomainIcon ? (
+                  {domainMeta?.icon ? (
                     <div className="bg-gradient-to-tr from-primary/20 to-accent/30 rounded-full p-2 shadow-lg">
-                      <DomainIcon
+                      <domainMeta.icon
                         className="rounded-full ring-2 ring-primary shadow-md object-cover size-[110px] bg-card p-6"
-                        aria-label={domainMeta?.label || job.domain}
+                        aria-label={domainMeta.label || job.domain}
                       />
                     </div>
                   ) : (
