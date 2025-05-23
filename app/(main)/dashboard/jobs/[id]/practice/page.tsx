@@ -3,7 +3,7 @@ import HeaderBar from "@/components/HeaderBar";
 import { interviewer } from "@/constants";
 import { getCurrentUser } from "@/lib/actions/auth.action";
 import { getFeedbackByJobId, getJobById } from "@/lib/actions/general.action";
-import { Trophy } from "lucide-react";
+
 import { redirect } from "next/navigation";
 
 interface RouteParams {
@@ -33,7 +33,7 @@ const PracticeDetails = async ({ params }: RouteParams) => {
         description={`${job.domain} - ${job.title}`}
         badges={[
           {
-            icon: Trophy,
+            icon: "trophy",
             label: job.level,
           },
         ]}

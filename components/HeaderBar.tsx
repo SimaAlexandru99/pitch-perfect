@@ -19,12 +19,19 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Download, Trophy } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import React from "react";
 import { useTransition } from "react";
 
 interface BadgeInfo {
-  icon: React.ElementType;
+  icon: string; // Use a string key for the icon
   label: string;
 }
+
+const iconMap: Record<string, React.ElementType> = {
+  trophy: Trophy,
+  arrowLeft: ArrowLeft,
+  download: Download,
+};
 
 interface HeaderBarProps {
   title: string;
@@ -144,7 +151,11 @@ export default function HeaderBar({
                   variant="outline"
                   className="gap-1 pl-2 whitespace-nowrap text-xs"
                 >
-                  <badge.icon className="h-3 w-3" />
+                  {badge.icon &&
+                    iconMap[badge.icon] &&
+                    React.createElement(iconMap[badge.icon], {
+                      className: "h-3 w-3",
+                    })}
                   {badge.label}
                 </Badge>
               ))}
