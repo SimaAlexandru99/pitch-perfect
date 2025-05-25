@@ -7,9 +7,9 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { dailyPitchInterviewer } from "@/constants";
 import { completeDailyPitch } from "@/lib/actions/general.action";
-import Agent from "@/app/(main)/dashboard/jobs/[id]/practice/Agent";
 import router from "next/router";
 import { setTimeout } from "timers";
+import PitchOfTheDayAgent from "./PitchOfTheDayAgent";
 
 interface DailyPitchProgressProps {
   userId: string;
@@ -84,16 +84,11 @@ export default function PitchOfTheDayClient({
       </Card>
 
       <Card className="p-4">
-        <Agent
+        <PitchOfTheDayAgent
           userName={userName}
           userId={userId}
-          type="daily-pitch"
-          jobId="daily-pitch"
-          jobTitle="Daily Pitch Challenge"
-          jobDomain="Sales Training"
-          jobLevel="Practice"
           config={dailyPitchInterviewer}
-          onProgress={handleProgressUpdate}
+          onProgressAction={handleProgressUpdate}
         />
       </Card>
     </div>

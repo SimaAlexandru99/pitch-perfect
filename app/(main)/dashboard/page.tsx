@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { Trophy } from "lucide-react";
 
 export default async function Page() {
   const user = await getCurrentUser();
@@ -130,15 +131,19 @@ export default async function Page() {
           className={cn(
             "bg-gradient-to-br border transition-all duration-300",
             hasDailyPitch
-              ? "from-green-50 to-background border-green-100"
-              : "from-primary-50 to-background border-primary-100"
+              ? "from-yellow-100 via-yellow-50 to-yellow-100 border-yellow-300 shadow-lg"
+              : "from-yellow-50 via-orange-50 to-white border-yellow-200"
           )}
         >
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-black">
+              {hasDailyPitch && (
+                <Trophy className="h-5 w-5 text-yellow-500 drop-shadow" />
+              )}
               Daily Pitch Challenge
               {hasDailyPitch ? (
-                <span className="inline-block px-2 py-1 text-xs rounded-full bg-green-500/10 text-green-600">
+                <span className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full bg-yellow-400/80 text-yellow-900 font-semibold shadow-sm border border-yellow-300">
+                  <Trophy className="h-4 w-4 mr-1 text-yellow-700" />
                   Completed
                 </span>
               ) : (
@@ -154,21 +159,27 @@ export default async function Page() {
           <CardContent>
             <div className="flex items-center justify-between">
               <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">
-                  {hasDailyPitch
-                    ? "Great job completing today's challenge!"
-                    : "Practice your objection handling skills"}
-                </p>
-                <p
-                  className={cn(
-                    "text-xs",
-                    hasDailyPitch ? "text-green-600" : "text-primary"
-                  )}
-                >
-                  {hasDailyPitch
-                    ? "Come back tomorrow for a new challenge"
-                    : "Complete today's challenge to maintain your streak!"}
-                </p>
+                {hasDailyPitch ? (
+                  <>
+                    <p className="text-base font-bold text-yellow-800 flex items-center gap-2">
+                      🎉{" "}
+                      <span>Great job completing today&apos;s challenge!</span>{" "}
+                      🎉
+                    </p>
+                    <p className="text-xs text-yellow-700 font-medium">
+                      Come back tomorrow for a new challenge
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm text-muted-foreground">
+                      Practice your objection handling skills
+                    </p>
+                    <p className="text-xs text-primary">
+                      Complete today&apos;s challenge to maintain your streak!
+                    </p>
+                  </>
+                )}
               </div>
               {!hasDailyPitch && (
                 <Link href="/dashboard/pitch-of-the-day">
