@@ -202,3 +202,28 @@ export async function updateUserProfile(
     return { success: false, error: (error as Error).message };
   }
 }
+
+// Get onboarding dismissed flag
+export async function getOnboardingDismissed(userId: string): Promise<boolean> {
+  try {
+    const userDoc = await db.collection("users").doc(userId).get();
+    if (!userDoc.exists) return false;
+    const data = userDoc.data();
+    return !!data?.onboardingDismissed;
+  } catch {
+    return false;
+  }
+}
+
+// Set onboarding dismissed flag
+export async function setOnboardingDismissed(userId: string, value: boolean) {
+  try {
+    await db
+      .collection("users")
+      .doc(userId)
+      .set({ onboardingDismissed: value }, { merge: true });
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: (error as Error).message };
+  }
+}

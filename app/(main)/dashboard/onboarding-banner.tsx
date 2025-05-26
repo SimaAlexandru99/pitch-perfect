@@ -9,12 +9,28 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { getOnboardingSteps, OnboardingSteps } from "@/lib/actions/auth.action";
+import {
+  getOnboardingSteps,
+  OnboardingSteps,
+  getOnboardingDismissed,
+  setOnboardingDismissed,
+} from "@/lib/actions/auth.action";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { CheckCircle2, Circle, Loader2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import Confetti from "react-confetti";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const ONBOARDING_STEPS: {
   key: keyof OnboardingSteps;
@@ -50,10 +66,15 @@ export default function OnboardingBanner() {
   const [dismissed, setDismissed] = useState(false);
   const [celebrated, setCelebrated] = useState(false);
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+  const [onboardingDismissed, setOnboardingDismissedState] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
 
   useEffect(() => {
     if (!user?.id) return;
     setLoading(true);
+    getOnboardingDismissed(user.id).then((dismissed) => {
+      setOnboardingDismissedState(dismissed);
+    });
     getOnboardingSteps(user.id)
       .then((res) => {
         if (res.success && res.steps) setSteps(res.steps);
@@ -87,7 +108,14 @@ export default function OnboardingBanner() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  if (!user || loading || !steps || completed === total || dismissed)
+  if (
+    !user ||
+    loading ||
+    !steps ||
+    completed === total ||
+    dismissed ||
+    onboardingDismissed
+  )
     return loading ? (
       <div className="w-full flex items-center justify-center py-4">
         <Loader2 className="animate-spin size-6 text-white/80" />
@@ -119,6 +147,40 @@ export default function OnboardingBanner() {
           >
             <X className="size-5 text-white/60" />
           </Button>
+          <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
+            <AlertDialogTrigger asChild>
+              <Button
+                size="sm"
+                variant="outline"
+                className="ml-2 text-xs border-white/30 text-white/80 hover:bg-white/10"
+                onClick={() => setShowDialog(true)}
+              >
+                Don&apos;t show again
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Hide Onboarding?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to hide the onboarding banner? You
+                  can&apos;t undo this action.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={async () => {
+                    if (user?.id) {
+                      await setOnboardingDismissed(user.id, true);
+                      setOnboardingDismissedState(true);
+                    }
+                  }}
+                >
+                  Yes, don&apos;t show again
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
         <TooltipProvider>
           <Tooltip>

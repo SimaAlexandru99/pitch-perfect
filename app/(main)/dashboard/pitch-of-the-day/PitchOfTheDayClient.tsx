@@ -50,7 +50,7 @@ export default function PitchOfTheDayClient({
           toast.success("Daily challenge completed!");
           // Give time for the toast to show before redirecting
           setTimeout(() => {
-            router.push("/dashboard");
+            router.push("/dashboard/pitch-of-the-day/success");
           }, 1500);
         }
       } catch (error) {
