@@ -66,7 +66,7 @@ export default async function LeaderboardPage() {
                             className={cn(
                               rowClass,
                               isCurrentUser &&
-                                "bg-amber-100/10 border-amber-400 border-l-4"
+                                "bg-amber-100/10 border-amber-400 border-l-4",
                             )}
                           >
                             <TableCell className="text-white/90 font-bold">
@@ -92,7 +92,7 @@ export default async function LeaderboardPage() {
                             </TableCell>
                           </TableRow>
                         );
-                      }
+                      },
                     )
                   ) : (
                     <TableRow>

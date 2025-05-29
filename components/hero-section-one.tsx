@@ -51,7 +51,7 @@ export default function HeroSection() {
                   <div className="mt-6 grid max-w-sm grid-cols-3 gap-6">
                     <div className="flex">
                       <Image
-                        className="h-4 w-fit"
+                        className="h-4 w-fit dark:invert"
                         src="https://html.tailus.io/blocks/customers/column.svg"
                         alt="Column Logo"
                         width={60}
@@ -61,7 +61,7 @@ export default function HeroSection() {
                     </div>
                     <div className="flex">
                       <Image
-                        className="h-5 w-fit"
+                        className="h-5 w-fit dark:invert"
                         src="https://html.tailus.io/blocks/customers/nvidia.svg"
                         alt="Nvidia Logo"
                         width={80}
@@ -71,7 +71,7 @@ export default function HeroSection() {
                     </div>
                     <div className="flex">
                       <Image
-                        className="h-4 w-fit"
+                        className="h-4 w-fit dark:invert"
                         src="https://html.tailus.io/blocks/customers/github.svg"
                         alt="GitHub Logo"
                         width={60}

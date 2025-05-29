@@ -92,7 +92,7 @@ const Agent = ({
   const [volumeLevel, setVolumeLevel] = useState(0);
   const [selectedPersona, setSelectedPersona] = useState<Persona>(personas[0]);
   const [partialTranscript, setPartialTranscript] = useState<string | null>(
-    null
+    null,
   );
   const [isCoachMode, setIsCoachMode] = useState(false);
 
@@ -195,7 +195,7 @@ const Agent = ({
           if (type === "daily-pitch") {
             // Count completed objections based on AI responses
             const assistantMessages = newMessages.filter(
-              (m) => m.role === "assistant"
+              (m) => m.role === "assistant",
             );
             if (assistantMessages.length > 1) {
               // First message is intro
@@ -442,7 +442,7 @@ const Agent = ({
                 key={lastMessage}
                 className={cn(
                   "text-lg leading-relaxed transition-opacity duration-500",
-                  "animate-fadeIn"
+                  "animate-fadeIn",
                 )}
               >
                 {lastMessage}
@@ -491,7 +491,7 @@ const Agent = ({
                   <span
                     className={cn(
                       "absolute animate-ping rounded-full opacity-75",
-                      callStatus !== "CONNECTING" && "hidden"
+                      callStatus !== "CONNECTING" && "hidden",
                     )}
                   />
                   <span className="relative">
@@ -514,7 +514,7 @@ const Agent = ({
                       "rounded-full w-12 h-12 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-300",
                       isMuted
                         ? "bg-destructive hover:bg-destructive/90"
-                        : "hover:bg-accent"
+                        : "hover:bg-accent",
                     )}
                     onClick={handleMuteToggle}
                   >
@@ -553,26 +553,26 @@ const Agent = ({
               (volumeLevel === 0
                 ? "w-0"
                 : volumeLevel < 0.1
-                ? "w-1/12"
-                : volumeLevel < 0.2
-                ? "w-1/6"
-                : volumeLevel < 0.3
-                ? "w-1/4"
-                : volumeLevel < 0.4
-                ? "w-1/3"
-                : volumeLevel < 0.5
-                ? "w-2/5"
-                : volumeLevel < 0.6
-                ? "w-1/2"
-                : volumeLevel < 0.7
-                ? "w-3/5"
-                : volumeLevel < 0.8
-                ? "w-2/3"
-                : volumeLevel < 0.9
-                ? "w-3/4"
-                : volumeLevel < 1
-                ? "w-11/12"
-                : "w-full")
+                  ? "w-1/12"
+                  : volumeLevel < 0.2
+                    ? "w-1/6"
+                    : volumeLevel < 0.3
+                      ? "w-1/4"
+                      : volumeLevel < 0.4
+                        ? "w-1/3"
+                        : volumeLevel < 0.5
+                          ? "w-2/5"
+                          : volumeLevel < 0.6
+                            ? "w-1/2"
+                            : volumeLevel < 0.7
+                              ? "w-3/5"
+                              : volumeLevel < 0.8
+                                ? "w-2/3"
+                                : volumeLevel < 0.9
+                                  ? "w-3/4"
+                                  : volumeLevel < 1
+                                    ? "w-11/12"
+                                    : "w-full")
             }
           />
         </div>

@@ -100,7 +100,7 @@ export async function commentOnScript(
     userId,
     userName,
     content,
-  }: { userId: string; userName: string; content: string }
+  }: { userId: string; userName: string; content: string },
 ) {
   try {
     const ref = db.collection("scripts").doc(scriptId);

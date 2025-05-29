@@ -28,10 +28,13 @@ export default function DomainsGridClient() {
       try {
         const jobs = await getJobs();
         if (jobs) {
-          const counts = jobs.reduce((acc, job) => {
-            acc[job.domain] = (acc[job.domain] || 0) + 1;
-            return acc;
-          }, {} as Record<string, number>);
+          const counts = jobs.reduce(
+            (acc, job) => {
+              acc[job.domain] = (acc[job.domain] || 0) + 1;
+              return acc;
+            },
+            {} as Record<string, number>,
+          );
           setJobCounts(counts);
         }
       } catch (error) {
@@ -47,7 +50,7 @@ export default function DomainsGridClient() {
   const filteredDomains = domains.filter(
     (domain) =>
       domain.value.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      domain.label.toLowerCase().includes(searchQuery.toLowerCase())
+      domain.label.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (

@@ -21,7 +21,7 @@ export default async function AchievementsPage() {
       ? stats.achievements
       : [];
   const unlockedMap: Map<string, string> = new Map(
-    achievementsArr.map((a) => [a.id, a.unlockedAt])
+    achievementsArr.map((a) => [a.id, a.unlockedAt]),
   );
   const unlockedCount = Array.from(unlockedMap.keys()).length;
   const totalCount = ALL_ACHIEVEMENTS.length;
@@ -76,7 +76,7 @@ export default async function AchievementsPage() {
                       aria-label={
                         unlockedAt
                           ? `${ach.name} achievement unlocked on ${new Date(
-                              unlockedAt
+                              unlockedAt,
                             ).toLocaleDateString()}`
                           : `${ach.name} achievement locked`
                       }

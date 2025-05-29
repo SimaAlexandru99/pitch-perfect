@@ -45,7 +45,7 @@ export default function Leaderboard({
     <Card
       className={cn(
         "p-6 bg-gradient-to-br from-slate-800/80 via-slate-900/80 to-slate-800/80 border-2 border-primary/30 shadow-lg backdrop-blur-sm",
-        className
+        className,
       )}
     >
       <div className="flex items-center gap-2 mb-4">
@@ -71,10 +71,10 @@ export default function Leaderboard({
                 index === 0
                   ? "bg-gradient-to-r from-amber-900/50 to-amber-800/50 border-amber-500/30"
                   : index === 1
-                  ? "bg-gradient-to-r from-slate-900/50 to-slate-800/50 border-slate-500/30"
-                  : index === 2
-                  ? "bg-gradient-to-r from-orange-900/50 to-orange-800/50 border-orange-500/30"
-                  : "bg-gradient-to-r from-slate-800/30 to-slate-900/30 border-slate-600/30"
+                    ? "bg-gradient-to-r from-slate-900/50 to-slate-800/50 border-slate-500/30"
+                    : index === 2
+                      ? "bg-gradient-to-r from-orange-900/50 to-orange-800/50 border-orange-500/30"
+                      : "bg-gradient-to-r from-slate-800/30 to-slate-900/30 border-slate-600/30",
               )}
             >
               <div className="flex items-center gap-3">
@@ -84,10 +84,10 @@ export default function Leaderboard({
                     index === 0
                       ? "bg-amber-900/50 border-amber-500/30"
                       : index === 1
-                      ? "bg-slate-900/50 border-slate-500/30"
-                      : index === 2
-                      ? "bg-orange-900/50 border-orange-500/30"
-                      : "bg-slate-900/50 border-slate-600/30"
+                        ? "bg-slate-900/50 border-slate-500/30"
+                        : index === 2
+                          ? "bg-orange-900/50 border-orange-500/30"
+                          : "bg-slate-900/50 border-slate-600/30",
                   )}
                 >
                   {index === 0 ? (

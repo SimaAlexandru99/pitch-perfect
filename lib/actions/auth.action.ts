@@ -146,7 +146,7 @@ export async function isAuthenticated() {
 
 // Get onboarding steps for a user
 export async function getOnboardingSteps(
-  userId: string
+  userId: string,
 ): Promise<{ success: boolean; steps?: OnboardingSteps; error?: string }> {
   try {
     const userDoc = await db.collection("users").doc(userId).get();
@@ -168,7 +168,7 @@ export async function getOnboardingSteps(
 export async function updateOnboardingStep(
   userId: string,
   step: keyof OnboardingSteps,
-  value: boolean
+  value: boolean,
 ) {
   try {
     await db
@@ -178,7 +178,7 @@ export async function updateOnboardingStep(
         {
           onboardingSteps: { [step]: value },
         },
-        { merge: true }
+        { merge: true },
       );
     return { success: true };
   } catch (error) {
@@ -190,7 +190,7 @@ export async function updateOnboardingStep(
 export async function updateUserProfile(
   userId: string,
   name: string,
-  avatar: string
+  avatar: string,
 ) {
   try {
     await db

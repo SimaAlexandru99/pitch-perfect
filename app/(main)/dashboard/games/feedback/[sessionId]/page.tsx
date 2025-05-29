@@ -183,7 +183,7 @@ export default async function FeedbackPage({
                     "p-3 sm:p-4 rounded-lg shadow-md",
                     message.role === "user"
                       ? "bg-indigo-900/50 ml-4 sm:ml-8 border border-indigo-500/30"
-                      : "bg-slate-800/50 mr-4 sm:mr-8 border border-slate-600/30"
+                      : "bg-slate-800/50 mr-4 sm:mr-8 border border-slate-600/30",
                   )}
                 >
                   <div className="flex items-center gap-2 mb-2">

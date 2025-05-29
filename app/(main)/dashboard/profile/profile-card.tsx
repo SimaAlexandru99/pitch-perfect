@@ -12,7 +12,7 @@ export function ProfileCard({
 }: {
   user: { name: string; email: string; avatar: string };
   stats: { level: number; xp: number; totalGames: number };
-  achievements: any[];
+  achievements: { id: string; unlockedAt: string }[];
 }) {
   return (
     <Card className="w-full max-w-xl mx-auto bg-gradient-to-br from-violet-900/60 via-indigo-900/60 to-slate-900/60 border-none shadow-2xl">

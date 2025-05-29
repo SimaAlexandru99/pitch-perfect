@@ -27,7 +27,7 @@ export default function UpvoteScriptBtn({
     setIsLoading(true);
     // Optimistic update
     setLocalUpvotes((prev) =>
-      hasUpvoted ? prev.filter((id) => id !== user.id) : [...prev, user.id]
+      hasUpvoted ? prev.filter((id) => id !== user.id) : [...prev, user.id],
     );
     const res = await upvoteScript(scriptId, user.id);
     setIsLoading(false);

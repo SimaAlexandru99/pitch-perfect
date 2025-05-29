@@ -51,7 +51,7 @@ function convertTimestamp(timestamp: TimestampType): string | undefined {
 async function initializeGameSession(
   userId: string,
   gameModeId: string,
-  gameMode: GameMode
+  gameMode: GameMode,
 ) {
   const defaultLives = 3;
   const defaultTimeLimit = 0;
@@ -91,7 +91,7 @@ export default async function GameSessionPage({
   const session = await initializeGameSession(
     user.id,
     modeId,
-    gameMode as GameMode
+    gameMode as GameMode,
   );
   const { stats: userStats } = await getUserGameStats(user.id);
 

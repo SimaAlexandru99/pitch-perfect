@@ -226,7 +226,7 @@ export function QuickCreateDialog({
                                 level.value === "intermediate" &&
                                   "bg-blue-500/10 text-blue-500",
                                 level.value === "advanced" &&
-                                  "bg-purple-500/10 text-purple-500"
+                                  "bg-purple-500/10 text-purple-500",
                               )}
                             >
                               {level.label}

@@ -1,13 +1,12 @@
 "use client";
 
-import { IconCirclePlusFilled, IconMail } from "@tabler/icons-react";
+import { IconCirclePlusFilled } from "@tabler/icons-react";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import { QuickCreateDialog } from "@/components/quick-create-dialog";
-import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import {
   SidebarGroup,
@@ -53,14 +52,6 @@ export function NavMain({
                 />
               )}
             </Dialog>
-            <Button
-              size="icon"
-              className="size-8 group-data-[collapsible=icon]:opacity-0"
-              variant="outline"
-            >
-              <IconMail />
-              <span className="sr-only">Inbox</span>
-            </Button>
           </SidebarMenuItem>
         </SidebarMenu>
         <SidebarMenu>

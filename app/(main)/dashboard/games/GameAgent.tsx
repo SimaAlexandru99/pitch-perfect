@@ -121,7 +121,7 @@ const DEFAULT_GAME_STATE: GameState = {
 // Helper to check if achievement is unlocked
 function hasAchievement(
   achievements: { id: string; unlockedAt: string }[],
-  id: string
+  id: string,
 ) {
   return achievements.some((a) => a.id === id);
 }
@@ -129,13 +129,13 @@ function hasAchievement(
 // Helper to unlock achievement
 function unlockAchievement(
   achievements: { id: string; unlockedAt: string }[],
-  id: string
+  id: string,
 ) {
   if (hasAchievement(achievements, id)) return achievements;
   toast.success(
     `Achievement Unlocked: ${
       ALL_ACHIEVEMENTS.find((a) => a.id === id)?.name || id
-    }`
+    }`,
   );
   return [...achievements, { id, unlockedAt: new Date().toISOString() }];
 }
@@ -163,7 +163,7 @@ export default function GameAgent({
   const [isMuted, setIsMuted] = useState(false);
   const [volumeLevel, setVolumeLevel] = useState(0);
   const [partialTranscript, setPartialTranscript] = useState<string | null>(
-    null
+    null,
   );
   const [isGeneratingFeedback, setIsGeneratingFeedback] = useState(false);
 
@@ -183,7 +183,7 @@ export default function GameAgent({
       ? initialStats.achievements.map((a) =>
           typeof a === "string"
             ? { id: a, unlockedAt: new Date().toISOString() }
-            : a
+            : a,
         )
       : [],
   });
@@ -286,7 +286,7 @@ export default function GameAgent({
             streakCount: gameState.metrics.streakCount,
           },
           gameState.streak,
-          gameState.timeRemaining
+          gameState.timeRemaining,
         ),
         timeSpent: gameState.metrics.totalDuration,
         transcript: messages,
@@ -357,7 +357,7 @@ export default function GameAgent({
             newXP += XP_REWARDS.PERFECT_RESPONSE;
             newAchievements = unlockAchievement(
               newAchievements,
-              "perfect_pitch"
+              "perfect_pitch",
             );
           }
           // Check for objection handling
@@ -439,7 +439,7 @@ export default function GameAgent({
             gamesWon: gameState.metrics.correctResponses,
             highestStreak: Math.max(
               gameState.streak,
-              gameState.metrics.streakCount
+              gameState.metrics.streakCount,
             ),
           });
         } catch (error) {
@@ -600,7 +600,7 @@ export default function GameAgent({
                         "size-5 sm:size-6 transition-colors duration-300",
                         index < gameState.lives
                           ? "text-red-400 fill-red-400"
-                          : "text-gray-600 fill-gray-600"
+                          : "text-gray-600 fill-gray-600",
                       )}
                     />
                   ))}
@@ -682,7 +682,7 @@ export default function GameAgent({
                             "size-4 sm:size-5 rounded-full border-2 transition-colors duration-300",
                             objective.completed
                               ? "border-emerald-400 bg-emerald-400"
-                              : "border-gray-600"
+                              : "border-gray-600",
                           )}
                         >
                           {objective.completed && (
@@ -692,13 +692,13 @@ export default function GameAgent({
                         <span
                           className={cn(
                             "text-white/90 font-medium",
-                            objective.completed && "line-through text-white/50"
+                            objective.completed && "line-through text-white/50",
                           )}
                         >
                           {objective.description}
                         </span>
                       </div>
-                    )
+                    ),
                   )}
                 </div>
               </div>
@@ -717,7 +717,7 @@ export default function GameAgent({
                     streakCount: gameState.metrics.streakCount,
                   },
                   gameState.streak,
-                  gameState.timeRemaining
+                  gameState.timeRemaining,
                 )}
               </span>
               <Progress
@@ -730,7 +730,7 @@ export default function GameAgent({
                       streakCount: gameState.metrics.streakCount,
                     },
                     gameState.streak,
-                    gameState.timeRemaining
+                    gameState.timeRemaining,
                   ) /
                     1000) *
                   100
@@ -846,7 +846,7 @@ export default function GameAgent({
                 key={lastMessage}
                 className={cn(
                   "text-base sm:text-lg leading-relaxed transition-opacity duration-500 text-white font-medium",
-                  "animate-fadeIn"
+                  "animate-fadeIn",
                 )}
               >
                 {lastMessage}
@@ -874,7 +874,7 @@ export default function GameAgent({
                   <span
                     className={cn(
                       "absolute animate-ping rounded-full opacity-75",
-                      callStatus !== CallStatus.CONNECTING && "hidden"
+                      callStatus !== CallStatus.CONNECTING && "hidden",
                     )}
                   />
                   <span className="relative">
@@ -904,7 +904,7 @@ export default function GameAgent({
                       "border-2 shadow-lg backdrop-blur-sm",
                       isMuted
                         ? "bg-red-900/50 hover:bg-red-900/70 border-red-500/50 hover:border-red-500/70"
-                        : "bg-violet-900/50 hover:bg-violet-900/70 border-violet-500/50 hover:border-violet-500/70"
+                        : "bg-violet-900/50 hover:bg-violet-900/70 border-violet-500/50 hover:border-violet-500/70",
                     )}
                     onClick={handleMuteToggle}
                   >
@@ -933,7 +933,7 @@ export default function GameAgent({
                     "px-3 sm:px-4 py-2 text-sm sm:text-base font-bold",
                     isMuted
                       ? "bg-red-900/90 text-red-100"
-                      : "bg-violet-900/90 text-violet-100"
+                      : "bg-violet-900/90 text-violet-100",
                   )}
                 >
                   {isMuted ? "Unmute Microphone" : "Mute Microphone"}
@@ -969,26 +969,26 @@ export default function GameAgent({
               volumeLevel === 0
                 ? "w-0"
                 : volumeLevel < 0.1
-                ? "w-1/12"
-                : volumeLevel < 0.2
-                ? "w-1/6"
-                : volumeLevel < 0.3
-                ? "w-1/4"
-                : volumeLevel < 0.4
-                ? "w-1/3"
-                : volumeLevel < 0.5
-                ? "w-2/5"
-                : volumeLevel < 0.6
-                ? "w-1/2"
-                : volumeLevel < 0.7
-                ? "w-3/5"
-                : volumeLevel < 0.8
-                ? "w-2/3"
-                : volumeLevel < 0.9
-                ? "w-3/4"
-                : volumeLevel < 1
-                ? "w-11/12"
-                : "w-full"
+                  ? "w-1/12"
+                  : volumeLevel < 0.2
+                    ? "w-1/6"
+                    : volumeLevel < 0.3
+                      ? "w-1/4"
+                      : volumeLevel < 0.4
+                        ? "w-1/3"
+                        : volumeLevel < 0.5
+                          ? "w-2/5"
+                          : volumeLevel < 0.6
+                            ? "w-1/2"
+                            : volumeLevel < 0.7
+                              ? "w-3/5"
+                              : volumeLevel < 0.8
+                                ? "w-2/3"
+                                : volumeLevel < 0.9
+                                  ? "w-3/4"
+                                  : volumeLevel < 1
+                                    ? "w-11/12"
+                                    : "w-full",
             )}
           />
         </div>

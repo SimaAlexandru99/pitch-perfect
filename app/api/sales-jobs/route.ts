@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json(
         { error: "Invalid data", details: parsed.error.format() },
-        { status: 400 }
+        { status: 400 },
       );
     }
     const docRef = await db.collection("sales_jobs").add({
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     return NextResponse.json(
       { error: "Server error", details: (error as Error).message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

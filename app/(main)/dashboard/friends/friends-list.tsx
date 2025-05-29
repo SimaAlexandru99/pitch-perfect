@@ -26,10 +26,13 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 function getUserMap(users: User[]): Record<string, User> {
-  return users.reduce((acc, user) => {
-    acc[user.id] = user;
-    return acc;
-  }, {} as Record<string, User>);
+  return users.reduce(
+    (acc, user) => {
+      acc[user.id] = user;
+      return acc;
+    },
+    {} as Record<string, User>,
+  );
 }
 
 export function FriendsList() {
@@ -64,13 +67,13 @@ export function FriendsList() {
         // Collect all unique user IDs (friends + request senders + outgoing recipients)
         const friendIds = (friendsRes.friends ?? []).map((f) => f.friendId);
         const requestFromIds = (requestsRes.incoming ?? []).map(
-          (r) => r.fromUserId
+          (r) => r.fromUserId,
         );
         const requestToIds = (requestsRes.outgoing ?? []).map(
-          (r) => r.toUserId
+          (r) => r.toUserId,
         );
         const allIds = Array.from(
-          new Set([...friendIds, ...requestFromIds, ...requestToIds])
+          new Set([...friendIds, ...requestFromIds, ...requestToIds]),
         );
         if (allIds.length) {
           const usersRes = await getUsersByIds(allIds);

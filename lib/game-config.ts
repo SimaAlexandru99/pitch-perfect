@@ -3,7 +3,7 @@ import { CreateAssistantDTO } from "@vapi-ai/web/dist/api";
 export function getGameConfig(
   gameMode: GameMode,
   currentLevel: number,
-  userName: string
+  userName: string,
 ): CreateAssistantDTO {
   return {
     name: "Sales Game AI",
@@ -37,12 +37,12 @@ export function getGameConfig(
 
 export function getFirstMessage(
   gameMode: GameMode,
-  currentLevel: number
+  currentLevel: number,
 ): string {
   switch (gameMode.type) {
     case "rpg":
       return `Welcome to Level ${currentLevel} of Sales Quest! I'll be your ${getRoleForLevel(
-        currentLevel
+        currentLevel,
       )}. Let's begin!`;
     case "streak":
       return "Welcome to Streak Mode! Let's see how long you can maintain a perfect response streak!";
@@ -60,7 +60,7 @@ export function getFirstMessage(
 export function getSystemPrompt(
   gameMode: GameMode,
   currentLevel: number,
-  userName: string
+  userName: string,
 ): string {
   const basePrompt = `You are a sales training AI playing the role of a customer in a game mode: ${
     gameMode.type
@@ -84,7 +84,7 @@ export function getSystemPrompt(
 
 export function getModeSpecificPrompt(
   gameMode: GameMode,
-  currentLevel: number
+  currentLevel: number,
 ): string {
   switch (gameMode.type) {
     case "rpg":
@@ -161,7 +161,7 @@ export function calculateScore(
     streakCount: number;
   },
   streak: number,
-  timeRemaining: number
+  timeRemaining: number,
 ): number {
   let score = 0;
   switch (gameMode.type) {

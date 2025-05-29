@@ -32,7 +32,7 @@ function findPageTitle(pathname: string): string {
   const search = (
     items: Array<{ [key: string]: unknown }>,
     key = "url",
-    label = "title"
+    label = "title",
   ) =>
     items.find((item) => item[key] === pathname)?.[label] as string | undefined;
 
@@ -90,11 +90,11 @@ export function SiteHeader() {
                   n.type === "friend_request"
                     ? n.data?.fromUserId
                     : n.type === "friend_accept" || n.type === "friend_decline"
-                    ? n.data?.toUserId
-                    : null
+                      ? n.data?.toUserId
+                      : null,
                 )
-                .filter(Boolean)
-            )
+                .filter(Boolean),
+            ),
           ) as string[];
           if (ids.length) {
             const usersRes = await getUsersByIds(ids);
@@ -122,7 +122,7 @@ export function SiteHeader() {
   async function handleMarkRead(id: string) {
     await markNotificationRead(id);
     setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
     );
   }
 
@@ -155,7 +155,7 @@ export function SiteHeader() {
   return (
     <header
       className={cn(
-        "flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)"
+        "flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)",
       )}
     >
       <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
@@ -215,7 +215,7 @@ export function SiteHeader() {
                       key={n.id}
                       className={cn(
                         "rounded px-2 py-2 flex items-start gap-2 cursor-pointer transition hover:bg-accent",
-                        !n.read && "bg-rose-50/60 border-l-4 border-rose-400"
+                        !n.read && "bg-rose-50/60 border-l-4 border-rose-400",
                       )}
                       onClick={() => !n.read && handleMarkRead(n.id)}
                     >

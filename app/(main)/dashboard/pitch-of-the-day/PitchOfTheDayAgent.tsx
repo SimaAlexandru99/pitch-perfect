@@ -54,13 +54,13 @@ export default function PitchOfTheDayAgent({
           const newMessages = [...prev, newMessage];
           // Only count assistant messages after the intro
           const assistantMessages = newMessages.filter(
-            (m) => m.role === "assistant"
+            (m) => m.role === "assistant",
           );
           if (assistantMessages.length > 1) {
             // First assistant message is intro
             const completed = Math.min(
               assistantMessages.length - 1,
-              MAX_OBJECTIONS
+              MAX_OBJECTIONS,
             );
             onProgressAction(completed);
           }
@@ -203,26 +203,26 @@ export default function PitchOfTheDayAgent({
               (volumeLevel === 0
                 ? "w-0"
                 : volumeLevel < 0.1
-                ? "w-1/12"
-                : volumeLevel < 0.2
-                ? "w-1/6"
-                : volumeLevel < 0.3
-                ? "w-1/4"
-                : volumeLevel < 0.4
-                ? "w-1/3"
-                : volumeLevel < 0.5
-                ? "w-2/5"
-                : volumeLevel < 0.6
-                ? "w-1/2"
-                : volumeLevel < 0.7
-                ? "w-3/5"
-                : volumeLevel < 0.8
-                ? "w-2/3"
-                : volumeLevel < 0.9
-                ? "w-3/4"
-                : volumeLevel < 1
-                ? "w-11/12"
-                : "w-full")
+                  ? "w-1/12"
+                  : volumeLevel < 0.2
+                    ? "w-1/6"
+                    : volumeLevel < 0.3
+                      ? "w-1/4"
+                      : volumeLevel < 0.4
+                        ? "w-1/3"
+                        : volumeLevel < 0.5
+                          ? "w-2/5"
+                          : volumeLevel < 0.6
+                            ? "w-1/2"
+                            : volumeLevel < 0.7
+                              ? "w-3/5"
+                              : volumeLevel < 0.8
+                                ? "w-2/3"
+                                : volumeLevel < 0.9
+                                  ? "w-3/4"
+                                  : volumeLevel < 1
+                                    ? "w-11/12"
+                                    : "w-full")
             }
           />
         </div>

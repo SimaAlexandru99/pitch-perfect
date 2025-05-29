@@ -1,7 +1,6 @@
 import { createSalesPrompt } from "@/lib/prompt-templates";
 import {
   Award,
-  Book,
   Briefcase,
   Building2,
   Camera,
@@ -16,8 +15,6 @@ import {
   LayoutDashboard,
   Newspaper,
   Plug,
-  Search,
-  Settings,
   ShieldCheck,
   ShoppingCart,
   Smartphone,
@@ -636,19 +633,9 @@ export const navigationData = {
       icon: Users,
     },
     {
-      title: "Settings",
-      url: "/settings",
-      icon: Settings,
-    },
-    {
       title: "Get Help",
       url: "/dashboard/help",
       icon: HelpCircle,
-    },
-    {
-      title: "Search",
-      url: "/search",
-      icon: Search,
     },
   ],
   documents: [
@@ -661,11 +648,6 @@ export const navigationData = {
       name: "Scripts",
       url: "/dashboard/scripts",
       icon: FileText,
-    },
-    {
-      name: "Resources",
-      url: "/dashboard/resources",
-      icon: Book,
     },
   ],
 };

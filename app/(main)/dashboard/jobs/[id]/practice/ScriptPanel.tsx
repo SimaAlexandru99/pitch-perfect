@@ -221,9 +221,9 @@ export function ScriptPanel({
                     handleCopy(
                       script.introduction.replaceAll(
                         "[Your Name]",
-                        displayName
+                        displayName,
                       ),
-                      "introduction"
+                      "introduction",
                     )
                   }
                   section="introduction"
@@ -276,10 +276,10 @@ export function ScriptPanel({
                       script.objections
                         .map(
                           (o) =>
-                            `Objection: ${o.objection}\nResponse: ${o.response}`
+                            `Objection: ${o.objection}\nResponse: ${o.response}`,
                         )
                         .join("\n\n"),
-                      "objections"
+                      "objections",
                     )
                   }
                   section="objections"

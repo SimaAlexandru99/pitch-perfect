@@ -34,23 +34,23 @@ export default function FeedbackContent({ feedback }: FeedbackContentProps) {
   const totalSpeakingTime =
     feedback.metrics.userSpeakingTime + feedback.metrics.aiSpeakingTime;
   const userSpeakingPercentage = Math.round(
-    (feedback.metrics.userSpeakingTime / totalSpeakingTime) * 100
+    (feedback.metrics.userSpeakingTime / totalSpeakingTime) * 100,
   );
   const aiSpeakingPercentage = Math.round(
-    (feedback.metrics.aiSpeakingTime / totalSpeakingTime) * 100
+    (feedback.metrics.aiSpeakingTime / totalSpeakingTime) * 100,
   );
 
   // Calculate average response time
   const avgResponseTime = Math.round(
-    feedback.metrics.totalDuration / (feedback.transcript.length / 2)
+    feedback.metrics.totalDuration / (feedback.transcript.length / 2),
   );
 
   // Get top and bottom categories
   const topCategory = feedback.categoryScores.reduce((prev, current) =>
-    prev.score > current.score ? prev : current
+    prev.score > current.score ? prev : current,
   );
   const bottomCategory = feedback.categoryScores.reduce((prev, current) =>
-    prev.score < current.score ? prev : current
+    prev.score < current.score ? prev : current,
   );
 
   // Get performance message based on score
@@ -436,7 +436,7 @@ export default function FeedbackContent({ feedback }: FeedbackContentProps) {
                               <div className="space-y-1">
                                 <p className="text-2xl font-semibold">
                                   {Math.round(
-                                    feedback.metrics.userSpeakingTime
+                                    feedback.metrics.userSpeakingTime,
                                   )}
                                   s
                                 </p>
@@ -569,7 +569,7 @@ export default function FeedbackContent({ feedback }: FeedbackContentProps) {
                                 <ChevronRight className="size-4 text-primary shrink-0 mt-1" />
                                 <span>{item}</span>
                               </li>
-                            )
+                            ),
                           )}
                         </ul>
                       </div>
@@ -584,7 +584,7 @@ export default function FeedbackContent({ feedback }: FeedbackContentProps) {
                                 <ChevronRight className="size-4 text-primary shrink-0 mt-1" />
                                 <span>{item}</span>
                               </li>
-                            )
+                            ),
                           )}
                         </ul>
                       </div>
@@ -608,7 +608,7 @@ export default function FeedbackContent({ feedback }: FeedbackContentProps) {
                                   {resource.description}
                                 </p>
                               </div>
-                            )
+                            ),
                           )}
                         </div>
                       </div>

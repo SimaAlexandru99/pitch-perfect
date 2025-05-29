@@ -45,7 +45,7 @@ function ensureSerializable<T>(data: T): T {
   if (typeof data === "object") {
     const result = {} as Record<string, unknown>;
     for (const [key, value] of Object.entries(
-      data as Record<string, unknown>
+      data as Record<string, unknown>,
     )) {
       // Convert timestamps
       if (key === "createdAt" || key === "updatedAt") {
@@ -155,7 +155,7 @@ function scheduleUpdate(userId: string, stats: Partial<UserGameStats>) {
           ...stats,
           updatedAt: new Date().toISOString(),
         },
-        { merge: true }
+        { merge: true },
       );
     }
     await batch.commit();
@@ -165,7 +165,7 @@ function scheduleUpdate(userId: string, stats: Partial<UserGameStats>) {
 
 export async function updateUserGameStats(
   userId: string,
-  stats: Partial<UserGameStats>
+  stats: Partial<UserGameStats>,
 ) {
   try {
     scheduleUpdate(userId, stats);

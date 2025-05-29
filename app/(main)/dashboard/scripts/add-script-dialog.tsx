@@ -40,7 +40,7 @@ export default function AddScriptDialog() {
   const [tags, setTags] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ title?: string; content?: string }>(
-    {}
+    {},
   );
   const [tab, setTab] = useState("edit");
   const contentMax = 2000;
@@ -48,7 +48,7 @@ export default function AddScriptDialog() {
   const contentOver = contentLength > contentMax;
 
   function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }

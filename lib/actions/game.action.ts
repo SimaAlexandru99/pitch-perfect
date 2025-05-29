@@ -17,7 +17,7 @@ const gameFeedbackSchema = z.object({
         name: z.string(),
         score: z.number().min(0).max(100),
         comment: z.string(),
-      })
+      }),
     )
     .min(1),
   strengths: z.array(z.string()).min(1),
@@ -32,7 +32,7 @@ const gameFeedbackSchema = z.object({
           title: z.string().min(1),
           url: z.string().url(),
           description: z.string().min(10),
-        })
+        }),
       )
       .min(1),
   }),
@@ -188,7 +188,7 @@ export async function getLeaderboard(gameModeId: string, limit: number = 10) {
 }
 
 export async function createGameFeedback(
-  data: Omit<GameFeedback, "createdAt">
+  data: Omit<GameFeedback, "createdAt">,
 ) {
   try {
     // Use sessionId as the document ID
@@ -220,7 +220,7 @@ export async function createGameFeedback(
 
 export async function updateGameSession(
   sessionId: string,
-  updates: Partial<GameSession>
+  updates: Partial<GameSession>,
 ) {
   try {
     const sessionRef = db.collection("gameSessions").doc(sessionId);
@@ -238,7 +238,7 @@ export async function updateGameSession(
 export async function completeGameSession(
   sessionId: string,
   finalScore: number,
-  completedLevels: number
+  completedLevels: number,
 ) {
   try {
     const sessionRef = db.collection("gameSessions").doc(sessionId);
@@ -403,7 +403,7 @@ Return the response in this exact format:
     validatedObject.categoryScores.forEach((category) => {
       if (category.score < 0 || category.score > 100) {
         throw new Error(
-          `Category score for ${category.name} must be between 0 and 100`
+          `Category score for ${category.name} must be between 0 and 100`,
         );
       }
     });
@@ -516,7 +516,7 @@ export async function getGameMode(modeId: string) {
  * Fetches all game feedback for a specific user, ordered by createdAt descending.
  */
 export async function getAllGameFeedbackByUser(
-  userId: string
+  userId: string,
 ): Promise<GameFeedback[]> {
   try {
     const snapshot = await db

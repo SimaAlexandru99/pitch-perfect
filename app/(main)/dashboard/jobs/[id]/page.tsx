@@ -57,7 +57,7 @@ export default async function JobDetailsPage({ params }: JobDetailsPageProps) {
   if (!job) return notFound();
 
   const domainMeta = domains.find(
-    (d: { value: string }) => d.value === job.domain
+    (d: { value: string }) => d.value === job.domain,
   );
 
   return (

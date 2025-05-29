@@ -6,7 +6,7 @@ export async function downloadFeedbackPDF(
   feedback: Feedback,
   jobTitle: string,
   domain: string,
-  level: string
+  level: string,
 ) {
   try {
     const blob = await pdf(
@@ -15,7 +15,7 @@ export async function downloadFeedbackPDF(
         jobTitle={jobTitle}
         domain={domain}
         level={level}
-      />
+      />,
     ).toBlob();
 
     const url = URL.createObjectURL(blob);

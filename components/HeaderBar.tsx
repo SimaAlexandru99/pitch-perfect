@@ -100,7 +100,7 @@ export default function HeaderBar({
     if (!actions.jobId || !actions.userId) return;
     const res = await deleteFeedbackByJobIdUserId(
       actions.jobId,
-      actions.userId
+      actions.userId,
     );
     if (res.success) {
       router.push(`/dashboard/jobs/${actions.jobId}/practice`);
@@ -113,7 +113,7 @@ export default function HeaderBar({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       className={cn(
-        "sticky top-0 z-30 border-b backdrop-blur supports-[backdrop-filter] bg-background/95 supports-[backdrop-filter]:bg-background/60"
+        "sticky top-0 z-30 border-b backdrop-blur supports-[backdrop-filter] bg-background/95 supports-[backdrop-filter]:bg-background/60",
       )}
     >
       <div className="flex h-14 items-center px-3 sm:px-4">
@@ -124,7 +124,7 @@ export default function HeaderBar({
             size="icon"
             className={cn(
               "mr-2 sm:mr-4",
-              "text-muted-foreground hover:text-foreground"
+              "text-muted-foreground hover:text-foreground",
             )}
           >
             <Link href={navigation.backHref}>

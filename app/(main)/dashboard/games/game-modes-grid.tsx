@@ -72,7 +72,7 @@ export function GameModesGrid() {
     (modeId: string) => {
       router.push(`/dashboard/games/${modeId}`);
     },
-    [router]
+    [router],
   );
 
   if (isLoading) {

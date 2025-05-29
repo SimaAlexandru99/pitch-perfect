@@ -27,7 +27,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       className={cn(cardVariants({ variant, className }))}
       {...props}
     />
-  )
+  ),
 );
 Card.displayName = "Card";
 

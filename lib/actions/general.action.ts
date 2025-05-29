@@ -21,10 +21,10 @@ const feedbackSchema = z.object({
               name: z.string(),
               score: z.number().min(0).max(100),
               comment: z.string(),
-            })
+            }),
           )
           .optional(),
-      })
+      }),
     )
     .min(1),
   strengths: z.array(z.string()).min(1),
@@ -39,7 +39,7 @@ const feedbackSchema = z.object({
           title: z.string().min(1),
           url: z.string().url(),
           description: z.string().min(10),
-        })
+        }),
       )
       .min(1),
   }),
@@ -61,7 +61,7 @@ export async function createFeedback(params: CreateFeedbackParams) {
     const formattedTranscript = transcript
       .map(
         (sentence: { role: string; content: string }) =>
-          `- ${sentence.role}: ${sentence.content}\n`
+          `- ${sentence.role}: ${sentence.content}\n`,
       )
       .join("");
 
@@ -87,7 +87,7 @@ Description: ${job.description}
     const userSpeakingPercentage =
       totalSpeakingTime > 0
         ? Math.round(
-            ((metrics?.userSpeakingTime || 0) / totalSpeakingTime) * 100
+            ((metrics?.userSpeakingTime || 0) / totalSpeakingTime) * 100,
           )
         : 0;
     const aiSpeakingPercentage =
@@ -251,13 +251,13 @@ Return the response in this exact format:
     validatedObject.categoryScores.forEach((category) => {
       if (category.score < 0 || category.score > 100) {
         throw new Error(
-          `Category score for ${category.name} must be between 0 and 100`
+          `Category score for ${category.name} must be between 0 and 100`,
         );
       }
       category.subcategories?.forEach((sub) => {
         if (sub.score < 0 || sub.score > 100) {
           throw new Error(
-            `Subcategory score for ${sub.name} must be between 0 and 100`
+            `Subcategory score for ${sub.name} must be between 0 and 100`,
           );
         }
       });
@@ -334,7 +334,7 @@ export async function getJobById(id: string): Promise<Job | null> {
  * Creates a new sales job in the database.
  */
 export async function createJob(
-  jobData: Omit<Job, "id">
+  jobData: Omit<Job, "id">,
 ): Promise<{ success: boolean; jobId?: string }> {
   try {
     const docRef = await db.collection("sales_jobs").add({
@@ -386,7 +386,7 @@ export async function getJobsByUserId(userId: string): Promise<Job[] | null> {
  * Fetches feedback for a specific job and user.
  */
 export async function getFeedbackByJobId(
-  params: GetFeedbackByJobIdParams
+  params: GetFeedbackByJobIdParams,
 ): Promise<Feedback | null> {
   const { jobId, userId } = params;
   try {
@@ -585,7 +585,7 @@ Return the response in this exact format:
  * Fetches a script for a specific job and user.
  */
 export async function getScript(
-  params: GetScriptParams
+  params: GetScriptParams,
 ): Promise<(CreateScriptParams & { id: string }) | null> {
   const { jobId, userId } = params;
   try {
@@ -613,7 +613,7 @@ export async function getScript(
  */
 export async function deleteFeedbackByJobIdUserId(
   jobId: string,
-  userId: string
+  userId: string,
 ) {
   try {
     const querySnapshot = await db
@@ -638,7 +638,7 @@ export async function deleteFeedbackByJobIdUserId(
  * Fetches all interview feedback for a specific user, ordered by createdAt descending.
  */
 export async function getAllInterviewFeedbackByUser(
-  userId: string
+  userId: string,
 ): Promise<Feedback[]> {
   try {
     const snapshot = await db
@@ -647,7 +647,7 @@ export async function getAllInterviewFeedbackByUser(
       .orderBy("createdAt", "desc")
       .get();
     return snapshot.docs.map(
-      (doc) => ({ id: doc.id, ...doc.data() } as Feedback)
+      (doc) => ({ id: doc.id, ...doc.data() }) as Feedback,
     );
   } catch (error) {
     console.error("Error fetching all interview feedback by user:", error);

@@ -34,9 +34,9 @@ export default function HelpPage() {
               How do I start a Daily Pitch Challenge?
             </AccordionTrigger>
             <AccordionContent>
-              Go to your dashboard and click the "Start Challenge" button in the
-              Daily Pitch Challenge card. Follow the prompts to complete the
-              challenge.
+              Go to your dashboard and click the &quot;Start Challenge&quot;
+              button in the Daily Pitch Challenge card. Follow the prompts to
+              complete the challenge.
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="faq-2">

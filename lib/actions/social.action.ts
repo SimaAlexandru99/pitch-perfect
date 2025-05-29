@@ -105,10 +105,10 @@ export async function getFriendRequests(userId: string) {
       .where("fromUserId", "==", userId)
       .get();
     const incoming = incomingSnap.docs.map(
-      (doc) => doc.data() as FriendRequest
+      (doc) => doc.data() as FriendRequest,
     );
     const outgoing = outgoingSnap.docs.map(
-      (doc) => doc.data() as FriendRequest
+      (doc) => doc.data() as FriendRequest,
     );
     return { success: true, incoming, outgoing };
   } catch (error) {
@@ -130,7 +130,7 @@ export async function getFriends(userId: string) {
 }
 
 export async function getUsersByIds(
-  userIds: string[]
+  userIds: string[],
 ): Promise<{ success: boolean; users?: User[]; error?: string }> {
   try {
     if (!userIds.length) return { success: true, users: [] };
@@ -180,7 +180,7 @@ export async function cancelFriendRequest(requestId: string) {
 export async function createNotification(
   userId: string,
   type: string,
-  data: object
+  data: object,
 ) {
   try {
     const id = uuidv4();

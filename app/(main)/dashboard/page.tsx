@@ -42,7 +42,7 @@ export default async function Page() {
   // Helper to aggregate stats
   function aggregateStats<T extends { score?: number; totalScore?: number }>(
     arr: T[],
-    scoreKey: "score" | "totalScore"
+    scoreKey: "score" | "totalScore",
   ): StatsSummary {
     const count = arr.length;
     const scores = arr
@@ -79,7 +79,7 @@ export default async function Page() {
   // Transform interview feedback for table
   const interviewTableData = interviewFeedback
     .filter(
-      (f) => typeof f.totalScore === "number" && !!f.createdAt && !!f.jobId
+      (f) => typeof f.totalScore === "number" && !!f.createdAt && !!f.jobId,
     )
     .map((f) => {
       const job = jobMap.get(f.jobId) || {
@@ -132,7 +132,7 @@ export default async function Page() {
             "bg-gradient-to-br border transition-all duration-300",
             hasDailyPitch
               ? "from-yellow-100 via-yellow-50 to-yellow-100 border-yellow-300 shadow-lg"
-              : "from-yellow-50 via-orange-50 to-white border-yellow-200"
+              : "from-yellow-50 via-orange-50 to-white border-yellow-200",
           )}
         >
           <CardHeader>
