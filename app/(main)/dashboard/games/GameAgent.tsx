@@ -121,7 +121,7 @@ const DEFAULT_GAME_STATE: GameState = {
 // Helper to check if achievement is unlocked
 function hasAchievement(
   achievements: { id: string; unlockedAt: string }[],
-  id: string,
+  id: string
 ) {
   return achievements.some((a) => a.id === id);
 }
@@ -129,13 +129,13 @@ function hasAchievement(
 // Helper to unlock achievement
 function unlockAchievement(
   achievements: { id: string; unlockedAt: string }[],
-  id: string,
+  id: string
 ) {
   if (hasAchievement(achievements, id)) return achievements;
   toast.success(
     `Achievement Unlocked: ${
       ALL_ACHIEVEMENTS.find((a) => a.id === id)?.name || id
-    }`,
+    }`
   );
   return [...achievements, { id, unlockedAt: new Date().toISOString() }];
 }
@@ -163,7 +163,7 @@ export default function GameAgent({
   const [isMuted, setIsMuted] = useState(false);
   const [volumeLevel, setVolumeLevel] = useState(0);
   const [partialTranscript, setPartialTranscript] = useState<string | null>(
-    null,
+    null
   );
   const [isGeneratingFeedback, setIsGeneratingFeedback] = useState(false);
 
@@ -183,7 +183,7 @@ export default function GameAgent({
       ? initialStats.achievements.map((a) =>
           typeof a === "string"
             ? { id: a, unlockedAt: new Date().toISOString() }
-            : a,
+            : a
         )
       : [],
   });
@@ -286,7 +286,7 @@ export default function GameAgent({
             streakCount: gameState.metrics.streakCount,
           },
           gameState.streak,
-          gameState.timeRemaining,
+          gameState.timeRemaining
         ),
         timeSpent: gameState.metrics.totalDuration,
         transcript: messages,
@@ -357,7 +357,7 @@ export default function GameAgent({
             newXP += XP_REWARDS.PERFECT_RESPONSE;
             newAchievements = unlockAchievement(
               newAchievements,
-              "perfect_pitch",
+              "perfect_pitch"
             );
           }
           // Check for objection handling
@@ -376,9 +376,11 @@ export default function GameAgent({
           }
         }
 
-        // Check for level up
-        const nextLevelThreshold = XP_THRESHOLDS[newLevel] || Infinity;
-        if (newXP >= nextLevelThreshold) {
+        // Check for level up (multi-level-up loop)
+        while (
+          newLevel < XP_THRESHOLDS.length - 1 &&
+          newXP >= XP_THRESHOLDS[newLevel]
+        ) {
           newLevel += 1;
           toast.success(`Level Up! You are now level ${newLevel}`);
           newXP += XP_REWARDS.LEVEL_COMPLETE;
@@ -412,6 +414,14 @@ export default function GameAgent({
           newAchievements = unlockAchievement(newAchievements, "first_win");
         }
 
+        // Freeze XP at the cap only if it would otherwise exceed the cap
+        if (
+          newLevel === XP_THRESHOLDS.length - 1 &&
+          newXP > XP_THRESHOLDS[newLevel]
+        ) {
+          newXP = XP_THRESHOLDS[newLevel];
+        }
+
         return {
           ...prev,
           xp: newXP,
@@ -439,7 +449,7 @@ export default function GameAgent({
             gamesWon: gameState.metrics.correctResponses,
             highestStreak: Math.max(
               gameState.streak,
-              gameState.metrics.streakCount,
+              gameState.metrics.streakCount
             ),
           });
         } catch (error) {
@@ -600,7 +610,7 @@ export default function GameAgent({
                         "size-5 sm:size-6 transition-colors duration-300",
                         index < gameState.lives
                           ? "text-red-400 fill-red-400"
-                          : "text-gray-600 fill-gray-600",
+                          : "text-gray-600 fill-gray-600"
                       )}
                     />
                   ))}
@@ -635,7 +645,12 @@ export default function GameAgent({
                   XP: {gameState.xp}
                 </span>
                 <Progress
-                  value={gameState.xp % 100}
+                  value={
+                    ((gameState.xp - XP_THRESHOLDS[gameState.level - 1]) /
+                      (XP_THRESHOLDS[gameState.level] -
+                        XP_THRESHOLDS[gameState.level - 1])) *
+                    100
+                  }
                   className="h-2 sm:h-3 bg-amber-900/50"
                 />
               </div>
@@ -682,7 +697,7 @@ export default function GameAgent({
                             "size-4 sm:size-5 rounded-full border-2 transition-colors duration-300",
                             objective.completed
                               ? "border-emerald-400 bg-emerald-400"
-                              : "border-gray-600",
+                              : "border-gray-600"
                           )}
                         >
                           {objective.completed && (
@@ -692,13 +707,13 @@ export default function GameAgent({
                         <span
                           className={cn(
                             "text-white/90 font-medium",
-                            objective.completed && "line-through text-white/50",
+                            objective.completed && "line-through text-white/50"
                           )}
                         >
                           {objective.description}
                         </span>
                       </div>
-                    ),
+                    )
                   )}
                 </div>
               </div>
@@ -717,7 +732,7 @@ export default function GameAgent({
                     streakCount: gameState.metrics.streakCount,
                   },
                   gameState.streak,
-                  gameState.timeRemaining,
+                  gameState.timeRemaining
                 )}
               </span>
               <Progress
@@ -730,7 +745,7 @@ export default function GameAgent({
                       streakCount: gameState.metrics.streakCount,
                     },
                     gameState.streak,
-                    gameState.timeRemaining,
+                    gameState.timeRemaining
                   ) /
                     1000) *
                   100
@@ -846,7 +861,7 @@ export default function GameAgent({
                 key={lastMessage}
                 className={cn(
                   "text-base sm:text-lg leading-relaxed transition-opacity duration-500 text-white font-medium",
-                  "animate-fadeIn",
+                  "animate-fadeIn"
                 )}
               >
                 {lastMessage}
@@ -874,7 +889,7 @@ export default function GameAgent({
                   <span
                     className={cn(
                       "absolute animate-ping rounded-full opacity-75",
-                      callStatus !== CallStatus.CONNECTING && "hidden",
+                      callStatus !== CallStatus.CONNECTING && "hidden"
                     )}
                   />
                   <span className="relative">
@@ -904,7 +919,7 @@ export default function GameAgent({
                       "border-2 shadow-lg backdrop-blur-sm",
                       isMuted
                         ? "bg-red-900/50 hover:bg-red-900/70 border-red-500/50 hover:border-red-500/70"
-                        : "bg-violet-900/50 hover:bg-violet-900/70 border-violet-500/50 hover:border-violet-500/70",
+                        : "bg-violet-900/50 hover:bg-violet-900/70 border-violet-500/50 hover:border-violet-500/70"
                     )}
                     onClick={handleMuteToggle}
                   >
@@ -933,7 +948,7 @@ export default function GameAgent({
                     "px-3 sm:px-4 py-2 text-sm sm:text-base font-bold",
                     isMuted
                       ? "bg-red-900/90 text-red-100"
-                      : "bg-violet-900/90 text-violet-100",
+                      : "bg-violet-900/90 text-violet-100"
                   )}
                 >
                   {isMuted ? "Unmute Microphone" : "Mute Microphone"}
@@ -988,7 +1003,7 @@ export default function GameAgent({
                                   ? "w-3/4"
                                   : volumeLevel < 1
                                     ? "w-11/12"
-                                    : "w-full",
+                                    : "w-full"
             )}
           />
         </div>

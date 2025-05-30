@@ -80,10 +80,17 @@ export function UserProfile({ user }: UserProfileProps) {
     loadUserStats();
   }, [user.id]);
 
+  // Clamp XP to the cap if at max level
+  const isMaxLevel = stats.level === XP_THRESHOLDS.length - 1;
+  const clampedXP =
+    isMaxLevel && stats.xp > XP_THRESHOLDS[stats.level]
+      ? XP_THRESHOLDS[stats.level]
+      : stats.xp;
   const nextLevelXP = XP_THRESHOLDS[stats.level] || Infinity;
   const currentLevelXP = XP_THRESHOLDS[stats.level - 1] || 0;
-  const progress =
-    ((stats.xp - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100;
+  const progress = isMaxLevel
+    ? 100
+    : ((clampedXP - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100;
 
   if (isLoading) {
     return (
@@ -130,7 +137,7 @@ export function UserProfile({ user }: UserProfileProps) {
               <div className="flex justify-between text-sm mb-1">
                 <span className="text-white/90">Level {stats.level}</span>
                 <span className="text-white/75">
-                  {stats.xp} / {nextLevelXP} XP
+                  {clampedXP} / {nextLevelXP} XP
                 </span>
               </div>
               <Progress value={progress} className="h-2" />
