@@ -22,13 +22,11 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-interface JobDetailsPageProps {
-  params: { id: string };
-}
-
 export async function generateMetadata({
   params,
-}: JobDetailsPageProps): Promise<Metadata> {
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
   const resolvedParams = await params;
   const job = await getJobById(resolvedParams.id);
 
@@ -50,14 +48,18 @@ export async function generateMetadata({
   };
 }
 
-export default async function JobDetailsPage({ params }: JobDetailsPageProps) {
+export default async function JobDetailsPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const resolvedParams = await params;
   const job = await getJobById(resolvedParams.id);
 
   if (!job) return notFound();
 
   const domainMeta = domains.find(
-    (d: { value: string }) => d.value === job.domain,
+    (d: { value: string }) => d.value === job.domain
   );
 
   return (

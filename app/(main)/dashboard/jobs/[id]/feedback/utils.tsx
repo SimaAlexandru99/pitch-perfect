@@ -1,4 +1,3 @@
-import { Feedback } from "@/types";
 import { pdf } from "@react-pdf/renderer";
 import { FeedbackPDF } from "./FeedbackPDF";
 

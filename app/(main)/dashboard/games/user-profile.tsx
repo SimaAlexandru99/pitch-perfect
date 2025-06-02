@@ -68,7 +68,21 @@ export function UserProfile({ user }: UserProfileProps) {
       try {
         const { success, stats: userStats } = await getUserGameStats(user.id);
         if (success && userStats) {
-          setStats(userStats as UserStats);
+          setStats({
+            xp: userStats.xp,
+            level: userStats.level,
+            charisma: userStats.charisma,
+            persuasion: userStats.persuasion,
+            confidence: userStats.confidence,
+            achievements: Array.isArray(userStats.achievements)
+              ? userStats.achievements.map((a: { id: string } | string) =>
+                  typeof a === "string" ? a : a.id
+                )
+              : [],
+            totalGames: userStats.totalGames,
+            gamesWon: userStats.gamesWon,
+            highestStreak: userStats.highestStreak,
+          });
         }
       } catch (error) {
         console.error("Error loading user stats:", error);
@@ -119,7 +133,9 @@ export function UserProfile({ user }: UserProfileProps) {
         <div className="flex items-center gap-4">
           <Avatar className="w-14 h-14 border-2 border-primary shadow">
             <AvatarImage src={user.avatar} alt={user.name || "Avatar"} />
-            <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+            <AvatarFallback>
+              {getInitials(user.name ?? undefined)}
+            </AvatarFallback>
           </Avatar>
           <div>
             <h2 className="text-xl font-semibold text-white">

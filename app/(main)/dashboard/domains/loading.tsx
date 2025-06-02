@@ -8,8 +8,10 @@ export default function Loading() {
       <HeaderBar
         title="Sales Domains"
         description="Loading domains..."
-        backHref="/dashboard"
-        backLabel="Back to Dashboard"
+        navigation={{
+          backHref: "/dashboard",
+          backLabel: "Back to Dashboard",
+        }}
       />
 
       <div className="flex-1 p-4 sm:p-8 pt-8 sm:pt-12">

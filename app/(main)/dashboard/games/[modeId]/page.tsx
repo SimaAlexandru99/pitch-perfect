@@ -51,7 +51,7 @@ function convertTimestamp(timestamp: TimestampType): string | undefined {
 async function initializeGameSession(
   userId: string,
   gameModeId: string,
-  gameMode: GameMode,
+  gameMode: GameMode
 ) {
   const defaultLives = 3;
   const defaultTimeLimit = 0;
@@ -73,7 +73,7 @@ async function initializeGameSession(
 export default async function GameSessionPage({
   params,
 }: {
-  params: { modeId: string };
+  params: Promise<{ modeId: string }>;
 }) {
   const { modeId } = await params;
   const user = await getCurrentUser();
@@ -91,7 +91,7 @@ export default async function GameSessionPage({
   const session = await initializeGameSession(
     user.id,
     modeId,
-    gameMode as GameMode,
+    gameMode as GameMode
   );
   const { stats: userStats } = await getUserGameStats(user.id);
 
@@ -137,6 +137,7 @@ export default async function GameSessionPage({
                 gameMode={gameMode as GameMode}
                 session={session}
                 initialStats={initialStats}
+                userAvatar={user.avatar}
               />
             </div>
             <div className="lg:col-span-1">
