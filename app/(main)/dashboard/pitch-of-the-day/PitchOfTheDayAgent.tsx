@@ -12,6 +12,7 @@ interface PitchOfTheDayAgentProps {
   userName: string;
   config: CreateAssistantDTO | string;
   onProgressAction: (completed: number, score?: number) => void;
+  onCallEnd?: () => void;
 }
 
 interface SavedMessage {
@@ -33,6 +34,7 @@ export default function PitchOfTheDayAgent({
   userName,
   config,
   onProgressAction,
+  onCallEnd,
 }: PitchOfTheDayAgentProps) {
   const [callStatus, setCallStatus] = useState<
     "INACTIVE" | "CONNECTING" | "ACTIVE" | "FINISHED"
@@ -54,13 +56,13 @@ export default function PitchOfTheDayAgent({
           const newMessages = [...prev, newMessage];
           // Only count assistant messages after the intro
           const assistantMessages = newMessages.filter(
-            (m) => m.role === "assistant",
+            (m) => m.role === "assistant"
           );
           if (assistantMessages.length > 1) {
             // First assistant message is intro
             const completed = Math.min(
               assistantMessages.length - 1,
-              MAX_OBJECTIONS,
+              MAX_OBJECTIONS
             );
             onProgressAction(completed);
           }
@@ -125,6 +127,12 @@ export default function PitchOfTheDayAgent({
       setLastMessage(messages[messages.length - 1].content);
     }
   }, [messages]);
+
+  useEffect(() => {
+    if (callStatus === "FINISHED" && onCallEnd) {
+      onCallEnd();
+    }
+  }, [callStatus, onCallEnd]);
 
   return (
     <div className="flex flex-col items-center gap-4 w-full">

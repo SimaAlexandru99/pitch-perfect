@@ -3,7 +3,13 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import {
   Tooltip,
@@ -521,44 +527,44 @@ export default function GameAgent({
       {/* Motivational AlertDialog for Feedback Generation */}
       <Dialog open={isGeneratingFeedback}>
         <DialogContent className="max-w-md bg-gradient-to-br from-violet-900/90 via-indigo-900/90 to-slate-900/90 border-2 border-amber-400/30 shadow-xl flex flex-col items-center">
-          <div className="flex flex-col items-center gap-3 py-2">
+          <DialogHeader className="flex flex-col items-center gap-3 py-2">
             <Sparkles className="size-10 text-amber-400 animate-bounce" />
-            <h2 className="text-2xl font-bold text-white text-center">
+            <DialogTitle className="text-2xl font-bold text-white text-center">
               Great work!
-            </h2>
-            <p className="text-white/80 text-center text-base max-w-xs">
+            </DialogTitle>
+            <DialogDescription className="text-white/80 text-center text-base max-w-xs">
               We&apos;re generating your personalized feedback. This may take a
               few moments.
-            </p>
-            <button
-              disabled
-              className="mt-4 flex items-center gap-2 px-6 py-2 rounded-lg bg-gradient-to-r from-amber-500 to-violet-500 text-white font-semibold text-lg opacity-80 cursor-not-allowed shadow-lg"
-            >
-              <span>
-                <svg
-                  className="animate-spin h-5 w-5 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                  ></path>
-                </svg>
-              </span>
-              Generating Feedback…
-            </button>
-          </div>
+            </DialogDescription>
+          </DialogHeader>
+          <button
+            disabled
+            className="mt-4 flex items-center gap-2 px-6 py-2 rounded-lg bg-gradient-to-r from-amber-500 to-violet-500 text-white font-semibold text-lg opacity-80 cursor-not-allowed shadow-lg"
+          >
+            <span>
+              <svg
+                className="animate-spin h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                ></path>
+              </svg>
+            </span>
+            Generating Feedback…
+          </button>
         </DialogContent>
       </Dialog>
 

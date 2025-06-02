@@ -22,33 +22,23 @@ export default function PitchOfTheDayClient({
 }: DailyPitchProgressProps) {
   const [isStarted, setIsStarted] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [isCallFinished, setIsCallFinished] = useState(false);
+  const [latestScore, setLatestScore] = useState<number>(0);
 
   const handleStart = () => {
     setIsStarted(true);
   };
 
-  // Update progress based on completed objections  const router = useRouter();
-  const [latestScore, setLatestScore] = useState<number>(0);
-
-  const handleProgressUpdate = async (completed: number, score?: number) => {
-    if (score !== undefined) {
-      setLatestScore(score);
-    }
-
-    const progressPercent = (completed / 3) * 100;
-    setProgress(progressPercent);
-
-    // If all objections are handled, complete the challenge
-    if (completed === 3) {
+  const handleCallEnd = async () => {
+    setIsCallFinished(true);
+    if (progress === 100) {
       try {
         const result = await completeDailyPitch({
           userId,
           score: latestScore,
         });
-
         if (result.success) {
           toast.success("Daily challenge completed!");
-          // Give time for the toast to show before redirecting
           setTimeout(() => {
             router.push("/dashboard/pitch-of-the-day/success");
           }, 1500);
@@ -58,6 +48,14 @@ export default function PitchOfTheDayClient({
         toast.error("Failed to save challenge completion");
       }
     }
+  };
+
+  const handleProgressUpdate = (completed: number, score?: number) => {
+    if (score !== undefined) {
+      setLatestScore(score);
+    }
+    const progressPercent = (completed / 3) * 100;
+    setProgress(progressPercent);
   };
 
   if (!isStarted) {
@@ -89,6 +87,7 @@ export default function PitchOfTheDayClient({
           userId={userId}
           config={dailyPitchInterviewer}
           onProgressAction={handleProgressUpdate}
+          onCallEnd={handleCallEnd}
         />
       </Card>
     </div>
