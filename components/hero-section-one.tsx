@@ -43,44 +43,6 @@ export default function HeroSection() {
                     </Button>
                   </div>
                 </div>
-
-                <div className="mt-10">
-                  <p className="text-muted-foreground">
-                    Trusted by sales teams at:
-                  </p>
-                  <div className="mt-6 grid max-w-sm grid-cols-3 gap-6">
-                    <div className="flex">
-                      <Image
-                        className="h-4 w-fit dark:invert"
-                        src="https://html.tailus.io/blocks/customers/column.svg"
-                        alt="Column Logo"
-                        width={60}
-                        height={16}
-                        unoptimized
-                      />
-                    </div>
-                    <div className="flex">
-                      <Image
-                        className="h-5 w-fit dark:invert"
-                        src="https://html.tailus.io/blocks/customers/nvidia.svg"
-                        alt="Nvidia Logo"
-                        width={80}
-                        height={20}
-                        unoptimized
-                      />
-                    </div>
-                    <div className="flex">
-                      <Image
-                        className="h-4 w-fit dark:invert"
-                        src="https://html.tailus.io/blocks/customers/github.svg"
-                        alt="GitHub Logo"
-                        width={60}
-                        height={16}
-                        unoptimized
-                      />
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
 
