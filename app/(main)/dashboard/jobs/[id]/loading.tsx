@@ -7,9 +7,11 @@ export default function Loading() {
     <div className="flex flex-col flex-1 overflow-hidden">
       <HeaderBar
         title="Job Details"
-        domain="Loading..."
-        jobTitle="Loading..."
-        level="Loading..."
+        description="Loading job details..."
+        navigation={{
+          backHref: "/dashboard/jobs",
+          backLabel: "Back to Jobs",
+        }}
       />
 
       <div className="flex-1 p-3 sm:p-6">

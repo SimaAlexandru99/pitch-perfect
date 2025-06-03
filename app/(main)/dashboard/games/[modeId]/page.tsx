@@ -73,7 +73,7 @@ async function initializeGameSession(
 export default async function GameSessionPage({
   params,
 }: {
-  params: { modeId: string };
+  params: Promise<{ modeId: string }>;
 }) {
   const { modeId } = await params;
   const user = await getCurrentUser();
@@ -137,6 +137,7 @@ export default async function GameSessionPage({
                 gameMode={gameMode as GameMode}
                 session={session}
                 initialStats={initialStats}
+                userAvatar={user.avatar || "/user-avatar.png"}
               />
             </div>
             <div className="lg:col-span-1">

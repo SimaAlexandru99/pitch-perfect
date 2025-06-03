@@ -20,8 +20,10 @@ export default function DomainsPage() {
       <HeaderBar
         title="Sales Domains"
         description="Explore different sales scenarios and practice your skills"
-        backHref="/dashboard"
-        backLabel="Back to Dashboard"
+        navigation={{
+          backHref: "/dashboard",
+          backLabel: "Back to Dashboard",
+        }}
       />
       <div className="flex-1 p-4 sm:p-8 pt-16 sm:pt-16">
         <div className="mx-auto max-w-[1500px] h-full">

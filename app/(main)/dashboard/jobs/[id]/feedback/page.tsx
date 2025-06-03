@@ -9,7 +9,7 @@ import FeedbackContent from "./FeedbackContent";
 export default async function FeedbackPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
   const user = await getCurrentUser();
@@ -26,13 +26,12 @@ export default async function FeedbackPage({
     <main className="flex flex-col flex-1 overflow-hidden">
       <HeaderBar
         title="Practice Feedback"
-        domain={job.domain}
-        jobTitle={job.title}
-        level={job.level}
-        showExport
-        showActions
-        jobId={job.id}
-        userId={user?.id ?? "Guest"}
+        description={job.title}
+        actions={{
+          showExport: true,
+          jobId: job.id,
+          userId: user?.id ?? "Guest",
+        }}
       >
         <ExportButton
           feedback={feedback}

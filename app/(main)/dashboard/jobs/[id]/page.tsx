@@ -23,14 +23,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 interface JobDetailsPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export async function generateMetadata({
   params,
 }: JobDetailsPageProps): Promise<Metadata> {
-  const resolvedParams = await params;
-  const job = await getJobById(resolvedParams.id);
+  const { id } = await params;
+  const job = await getJobById(id);
 
   if (!job) {
     return {
@@ -51,8 +51,8 @@ export async function generateMetadata({
 }
 
 export default async function JobDetailsPage({ params }: JobDetailsPageProps) {
-  const resolvedParams = await params;
-  const job = await getJobById(resolvedParams.id);
+  const { id } = await params;
+  const job = await getJobById(id);
 
   if (!job) return notFound();
 
